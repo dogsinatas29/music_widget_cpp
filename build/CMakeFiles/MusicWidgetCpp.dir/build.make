@@ -100,20 +100,52 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dogsinatas/c_project/music_widget_cpp/MusicWidget.cpp -o CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.s
 
+CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o: CMakeFiles/MusicWidgetCpp.dir/flags.make
+CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o: /home/dogsinatas/c_project/music_widget_cpp/SettingsManager.cpp
+CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o: CMakeFiles/MusicWidgetCpp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o -MF CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o.d -o CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o -c /home/dogsinatas/c_project/music_widget_cpp/SettingsManager.cpp
+
+CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dogsinatas/c_project/music_widget_cpp/SettingsManager.cpp > CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.i
+
+CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dogsinatas/c_project/music_widget_cpp/SettingsManager.cpp -o CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.s
+
+CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o: CMakeFiles/MusicWidgetCpp.dir/flags.make
+CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o: /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.cpp
+CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o: CMakeFiles/MusicWidgetCpp.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o -MF CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o.d -o CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o -c /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.cpp
+
+CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.cpp > CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.i
+
+CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.cpp -o CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.s
+
 # Object files for target MusicWidgetCpp
 MusicWidgetCpp_OBJECTS = \
 "CMakeFiles/MusicWidgetCpp.dir/main.cpp.o" \
-"CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o"
+"CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o" \
+"CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o" \
+"CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o"
 
 # External object files for target MusicWidgetCpp
 MusicWidgetCpp_EXTERNAL_OBJECTS =
 
 MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/main.cpp.o
 MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o
+MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o
+MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o
 MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/build.make
 MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/compiler_depend.ts
 MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable MusicWidgetCpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable MusicWidgetCpp"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MusicWidgetCpp.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

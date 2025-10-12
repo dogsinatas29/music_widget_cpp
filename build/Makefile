@@ -153,6 +153,54 @@ MusicWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.s
 .PHONY : MusicWidget.cpp.s
 
+SettingsManager.o: SettingsManager.cpp.o
+.PHONY : SettingsManager.o
+
+# target to build an object file
+SettingsManager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.o
+.PHONY : SettingsManager.cpp.o
+
+SettingsManager.i: SettingsManager.cpp.i
+.PHONY : SettingsManager.i
+
+# target to preprocess a source file
+SettingsManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.i
+.PHONY : SettingsManager.cpp.i
+
+SettingsManager.s: SettingsManager.cpp.s
+.PHONY : SettingsManager.s
+
+# target to generate assembly for a file
+SettingsManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/SettingsManager.cpp.s
+.PHONY : SettingsManager.cpp.s
+
+SpectrumWidget.o: SpectrumWidget.cpp.o
+.PHONY : SpectrumWidget.o
+
+# target to build an object file
+SpectrumWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o
+.PHONY : SpectrumWidget.cpp.o
+
+SpectrumWidget.i: SpectrumWidget.cpp.i
+.PHONY : SpectrumWidget.i
+
+# target to preprocess a source file
+SpectrumWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.i
+.PHONY : SpectrumWidget.cpp.i
+
+SpectrumWidget.s: SpectrumWidget.cpp.s
+.PHONY : SpectrumWidget.s
+
+# target to generate assembly for a file
+SpectrumWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.s
+.PHONY : SpectrumWidget.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -189,6 +237,12 @@ help:
 	@echo "... MusicWidget.o"
 	@echo "... MusicWidget.i"
 	@echo "... MusicWidget.s"
+	@echo "... SettingsManager.o"
+	@echo "... SettingsManager.i"
+	@echo "... SettingsManager.s"
+	@echo "... SpectrumWidget.o"
+	@echo "... SpectrumWidget.i"
+	@echo "... SpectrumWidget.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

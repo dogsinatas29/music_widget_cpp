@@ -64,7 +64,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     add(m_MainBox);
     m_MainBox.set_name("music-widget");
 
-    m_MainBox.pack_start(m_TopHBox, false, true, 0);
+    m_MainBox.pack_start(m_TopHBox, false, false, 0);
     m_AlbumArt.set_size_request(100, 100);
     m_AlbumArtOverlay.add(m_AlbumArt);
 
@@ -92,7 +92,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     // 정보 및 스펙트럼 섹션
     // ========================================================================
     m_InfoVBox.set_orientation(Gtk::ORIENTATION_VERTICAL);
-    m_TopHBox.pack_start(m_InfoVBox, false, true, 10); // 정보 섹션 (오른쪽)
+    m_TopHBox.pack_start(m_InfoVBox, false, false, 10); // 정보 섹션 (오른쪽)
 
     m_TrackLabel.set_halign(Gtk::ALIGN_START);
     m_ArtistLabel.set_halign(Gtk::ALIGN_START);
@@ -103,7 +103,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_SpectrumWidget.set_name("spectrum-widget");
     m_SpectrumWidget.set_size_request(-1, 80); 
     
-    m_InfoVBox.pack_start(m_SpectrumWidget, false, true, 25);
+    m_InfoVBox.pack_start(m_SpectrumWidget, false, false, 25);
 
     m_PrevButton.set_image_from_icon_name("media-skip-backward", Gtk::ICON_SIZE_BUTTON);
     m_PlayPauseButton.set_image_from_icon_name("media-playback-start", Gtk::ICON_SIZE_BUTTON);
@@ -113,14 +113,14 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_PlayPauseButton.get_style_context()->add_class("control-button");
     m_NextButton.get_style_context()->add_class("control-button");
 
-    m_ControlHBox.pack_start(m_PrevButton, true, true, 0);
-    m_ControlHBox.pack_start(m_PlayPauseButton, true, true, 0);
-    m_ControlHBox.pack_start(m_NextButton, true, true, 0);
+    m_ControlHBox.pack_start(m_PrevButton, false, false, 0);
+    m_ControlHBox.pack_start(m_PlayPauseButton, false, false, 0);
+    m_ControlHBox.pack_start(m_NextButton, false, false, 0);
 
     m_ProgressBar.set_fraction(0.0);
     m_ProgressBar.set_show_text(true);
     m_ProgressBar.set_size_request(-1, 5);
-    m_MainBox.pack_end(m_ProgressBar, false, true, 5);
+    m_MainBox.pack_end(m_ProgressBar, false, false, 5);
 
     m_PrevButton.signal_clicked().connect(sigc::mem_fun(*this, &MusicWidget::on_prev_clicked));
     m_PlayPauseButton.signal_clicked().connect(sigc::mem_fun(*this, &MusicWidget::on_play_pause_clicked));
@@ -459,16 +459,8 @@ void MusicWidget::on_size_allocate(Gtk::Allocation& allocation)
     int widget_width = allocation.get_width();
     int widget_height = allocation.get_height();
 
-    // 앨범 아트 크기 조정 (예: 위젯 너비의 50%)
-    int album_art_size = std::min(widget_width / 2, widget_height / 2);
-    m_AlbumArt.set_size_request(album_art_size, album_art_size);
-
-    // 스펙트럼 위젯 높이 조정 (예: 위젯 높이의 30%)
-    int spectrum_height = widget_height * 0.3;
-    m_SpectrumWidget.set_size_request(-1, spectrum_height);
-
     // 기타 레이블 등의 위치 조정은 Gtk::Box의 pack_start/pack_end 설정에 따라 자동으로 이루어짐
-    // 필요하다면 여기에서 추가적인 수동 조정을 할 수 있습니다.
+    // 필요하다면 여기에서 추가적인 수동 조정을 할 수 있습니다。
     std::cout << "[Debug] on_size_allocate called. New size: " 
               << widget_width << "x" << widget_height << std::endl;
 }

@@ -85,12 +85,12 @@ clean: CMakeFiles/MusicWidgetCpp.dir/clean
 CMakeFiles/MusicWidgetCpp.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=1,2,3 "Built target MusicWidgetCpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target MusicWidgetCpp"
 .PHONY : CMakeFiles/MusicWidgetCpp.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/MusicWidgetCpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/MusicWidgetCpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles 0
 .PHONY : CMakeFiles/MusicWidgetCpp.dir/rule
@@ -102,7 +102,7 @@ MusicWidgetCpp: CMakeFiles/MusicWidgetCpp.dir/rule
 # codegen rule for target.
 CMakeFiles/MusicWidgetCpp.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MusicWidgetCpp.dir/build.make CMakeFiles/MusicWidgetCpp.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=1,2,3 "Finished codegen for target MusicWidgetCpp"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/dogsinatas/c_project/music_widget_cpp/build/CMakeFiles --progress-num=1,2,3,4,5 "Finished codegen for target MusicWidgetCpp"
 .PHONY : CMakeFiles/MusicWidgetCpp.dir/codegen
 
 # clean rule for target.
