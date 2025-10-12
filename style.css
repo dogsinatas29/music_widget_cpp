@@ -1,53 +1,38 @@
 /* style.css */
+
 #music-widget {
-    background-color: rgba(30, 30, 30, 0.8); /* 기본 투명도 80% */
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-#spectrum-area {
-    background-color: rgba(0, 0, 0, 0.2); /* 스펙트럼 영역 배경 */
-    border-radius: 5px;
+label {
+    color: white;
+    font-weight: bold;
 }
 
-/* --- 디버깅을 위한 추가 스타일 --- */
-
-/* 메인 Box (확인용) */
-#music-widget GtkBox {
-    border: 1px dashed red; /* Box의 경계 확인 */
+progressbar trough, progressbar progress {
+    border-radius: 3px;
 }
 
-/* 앨범 아트가 들어있는 영역 */
-#music-widget GtkImage {
-    background-color: rgba(255, 0, 0, 0.3); /* 앨범 아트 배경을 빨간색으로 */
-    min-width: 100px; /* 최소 너비 지정 */
-    min-height: 100px; /* 최소 높이 지정 */
-    border: 1px solid red;
+progressbar progress {
+    background-image: none;
+    background-color: #1DB954; /* Spotify Green */
 }
 
-/* 트랙/아티스트 레이블 영역 */
-GtkLabel {
-    background-color: rgba(0, 255, 0, 0.3); /* 레이블 배경을 초록색으로 */
-    min-height: 20px; /* 최소 높이 지정 */
-    border: 1px solid green;
+.control-button {
+    background: transparent;
+    border: none;
 }
 
-/* 컨트롤 버튼 영역 */
-GtkButton {
-    background-color: rgba(0, 0, 255, 0.3); /* 버튼 배경을 파란색으로 */
-    min-width: 60px; /* 최소 너비 지정 (텍스트 버튼에 맞춤) */
-    min-height: 40px; /* 최소 높이 지정 */
-    border: 1px solid blue;
+.control-button image {
+    color: white;
 }
 
-/* TopHBox (앨범 아트와 정보/컨트롤이 들어있는) 영역 */
-#music-widget > GtkBox:first-child { /* #music-widget의 첫 번째 자식 GtkBox (m_TopHBox) */
-    border: 2px solid yellow; /* 노란색 경계로 강조 */
-    min-height: 120px; /* 최소 높이 지정 */
+.control-button:hover image {
+    color: red;
 }
 
-/* PlayerInfoControlsVBox (트랙/아티스트/컨트롤이 들어있는) 영역 */
-#music-widget > GtkBox:first-child > GtkBox:last-child { /* m_TopHBox의 마지막 자식 GtkBox */
-     border: 2px solid orange; /* 주황색 경계로 강조 */
-     min-width: 200px;
+#cava-widget {
+    background-color: transparent;
 }
