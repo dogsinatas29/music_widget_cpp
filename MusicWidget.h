@@ -1,47 +1,52 @@
 #ifndef MUSIC_WIDGET_H
 #define MUSIC_WIDGET_H
 
+#include "SpectrumWidget.h"
+#include "WindowState.h"
 #include <gtkmm.h>
 #include <string>
+#include <iostream>
 
-// DBus 관련 헤더
 #include <giomm/dbusconnection.h>
 #include <giomm/dbusproxy.h>
-// #include <giomm/bus.h> // 이 줄은 제거합니다!
+#include <glibmm/refptr.h>
+#include <glibmm/main.h> // Glib::signal_timeout() 포함
+#include <sigc++/connection.h> // sigc::connection 포함
+#include <glibmm/variant.h>
+
+
+class SettingsManager;
 
 class MusicWidget : public Gtk::Window
 {
 public:
-    MusicWidget();
+    MusicWidget(const WindowState& state, SettingsManager& settingsManager);
     virtual ~MusicWidget();
 
+    WindowState get_window_state();
+
 protected:
-    bool on_button_press_event(GdkEventButton* event);
-    void on_opacity_scale_changed();
+    // Signal handlers (GTK Overrides)
+    virtual bool on_button_press_event(GdkEventButton* event) override;
+    virtual bool on_map_event(GdkEventAny* event) override;
+    virtual void on_size_allocate(Gtk::Allocation& allocation) override;
+    virtual bool on_visibility_notify_event(GdkEventVisibility* event) override;
 
-    void on_prev_clicked();
-    void on_play_pause_clicked();
-    void on_next_clicked();
+private:
+    SettingsManager& m_settings_manager;
 
-    void init_dbus();
-    void update_player_status();
-    void call_player_method(const Glib::ustring& method_name);
+    // ===================================
+    // UI Components (VBox/HBox로 명확히 지정)
+    // ===================================
+    Gtk::VBox m_MainBox;
+    Gtk::HBox m_TopHBox;
+    Gtk::VBox m_InfoVBox;
 
-    // GIOMM 2.66.8의 signal_name_owner_changed 시그널 서명에 맞춤
-    // Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name, const Glib::ustring& old_owner, const Glib::ustring& new_owner
-    void find_and_update_player();
-    void on_name_appeared(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name, const Glib::ustring& name_owner);
-    void on_name_vanished(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name);
-    void on_properties_changed(
-        const Glib::ustring& interface_name,
-        const std::map<Glib::ustring, Glib::VariantBase>& changed_properties,
-        const std::vector<Glib::ustring>& invalidated_properties);
-
-
-    Gtk::Box m_MainBox;
-    Gtk::Box m_TopHBox;
-    Gtk::Box m_PlayerInfoControlsVBox;
-    Gtk::Box m_ControlHBox;
+    Gtk::VBox m_AlbumArtVBox;
+    Gtk::Overlay m_AlbumArtOverlay;
+    
+    Gtk::HBox m_ControlHBox;
+    Gtk::HBox m_AlbumArtControlBox;
 
     Gtk::Image m_AlbumArt;
     Gtk::Label m_TrackLabel;
@@ -51,21 +56,57 @@ protected:
     Gtk::Button m_PlayPauseButton;
     Gtk::Button m_NextButton;
 
+    SpectrumWidget m_SpectrumWidget;
     Gtk::ProgressBar m_ProgressBar;
-    Gtk::Scale m_OpacityScale;
 
+    // ===================================
+    // State, DBus & Timer Members
+    // ===================================
     bool m_is_dragging;
-    int m_drag_start_x, m_drag_start_y;
+    int m_drag_start_x, m_drag_start_y; // 드래그 상태 변수
+    Glib::ustring m_current_player_bus_name;
 
+    // D-Bus
     guint m_name_watch_id;
     Glib::RefPtr<Gio::DBus::Connection> m_dbus_connection;
-    Glib::ustring m_current_player_bus_name;
     Glib::RefPtr<Gio::DBus::Proxy> m_player_proxy;
     Glib::RefPtr<Gio::DBus::Proxy> m_properties_proxy;
-    sigc::connection m_timer_connection;
 
-private:
+    // Timer Connections
+    sigc::connection m_timer_connection;
+    // 타입을 sigc::connection으로 변경하여 컴파일 오류 해결
+    sigc::connection m_stick_timer_connection;
+    
+    // 스펙트럼 시뮬레이션 타이머
+    sigc::connection m_spectrum_timer_connection;
+
+    // ===================================
+    // Internal Methods
+    // ===================================
+    void init_dbus();
+    void find_and_update_player();
+    void update_player_status();
+    void call_player_method(const Glib::ustring& method_name);
+    
+    void on_properties_changed(
+        const Glib::ustring& sender_name,
+        const Glib::ustring& signal_name,
+        const Glib::VariantContainerBase& parameters);
+
+    void on_name_appeared(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name, const Glib::ustring& name_owner);
+    void on_name_vanished(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name);
+    
+    // Button Handlers
+    void on_prev_clicked();
+    void on_play_pause_clicked();
+    void on_next_clicked();
+    
+    // Timer Handlers
     bool update_progress();
+    bool on_stick_timer();
+    bool on_spectrum_simulation_timer();
+    void on_hide_event();
 };
 
 #endif // MUSIC_WIDGET_H
+

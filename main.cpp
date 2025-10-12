@@ -1,40 +1,77 @@
 #include <gtkmm/application.h>
 #include "MusicWidget.h"
-#include <iostream> // std::cout, std::cerr을 위해 추가
-#include <exception> // std::exception을 위해 추가 (Glib::Error 및 std::exception catch를 위해 필요)
+#include "SettingsManager.h" // 설정 관리자 헤더 포함
+#include <iostream>
+#include <exception>
+#include <streambuf> // std::cout.rdbuf()->pubsetbuf(0, 0) 사용을 위해 추가
+
+// Gdk::WindowTypeHint를 사용하기 위해 gdkmm 헤더를 포함합니다.
+#include <gdkmm/window.h> 
+
+const int DEFAULT_WIDTH = 200;
+const int DEFAULT_HEIGHT = 200;
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Application starting." << std::endl;
-    // Gio::ApplicationFlags::APPLICATION_HANDLES_COMMAND_LINE 플래그 제거 (기본 동작으로)
+    // 표준 스트림 동기화 끄기 및 버퍼링 비활성화
+    std::ios_base::sync_with_stdio(false);
+    std::cout.rdbuf()->pubsetbuf(0, 0);
+    std::cerr.rdbuf()->pubsetbuf(0, 0);
+
+    std::cout << "[Main] Application starting." << std::endl;
+    
     auto app = Gtk::Application::create("org.dogsinatas.musicwidget");
 
     if (!app) {
-        std::cerr << "ERROR: Failed to create Gtk::Application." << std::endl;
+        std::cerr << "[Main] ERROR: Failed to create Gtk::Application." << std::endl;
         return 1;
     }
+    std::cout << "[Main] Gtk::Application created." << std::endl;
 
-    app->signal_activate().connect([&app]() {
-        std::cout << "Application activated, creating MusicWidget." << std::endl;
-        try {
-            MusicWidget* widget = new MusicWidget();
+    // SettingsManager 인스턴스 생성
+    SettingsManager settingsManager;
+    std::cout << "[Main] SettingsManager created." << std::endl;
+
+    app->signal_activate().connect([&app, &settingsManager]() {
+        std::cout << "[Main] Application activated, creating MusicWidget." << std::endl;
+         try {
+            // 설정 파일에서 창 상태 불러오기
+            WindowState initialState = settingsManager.load_state();
+            std::cout << "[Main] Initial WindowState loaded." << std::endl;
+            
+            // 로드된 크기가 기본값보다 크거나 유효하지 않으면 기본값으로 재설정
+            if (initialState.width != DEFAULT_WIDTH || initialState.height != DEFAULT_HEIGHT) {
+                initialState.width = DEFAULT_WIDTH;
+                initialState.height = DEFAULT_HEIGHT;
+                std::cout << "[Main] Window size reset to default: " 
+                          << DEFAULT_WIDTH << "x" << DEFAULT_HEIGHT << std::endl;
+            }
+            
+            // 불러온 상태와 settingsManager를 전달하여 MusicWidget 생성
+            MusicWidget* widget = new MusicWidget(initialState, settingsManager);
+            std::cout << "[Main] MusicWidget created." << std::endl;
+            
+            widget->set_title("Music Widget Controller"); 
+            widget->set_type_hint(Gdk::WINDOW_TYPE_HINT_DOCK);
+            widget->set_keep_above(true);   
+            widget->set_skip_taskbar_hint(true); 
+            
             app->add_window(*widget);
-            // widget->signal_hide().connect([widget]() {
-            //    std::cout << "MusicWidget hidden, deleting." << std::endl;
-            //    delete widget;
-            //});
+            std::cout << "[Main] MusicWidget added to application." << std::endl;
+            
             widget->show_all();
-            std::cout << "MusicWidget show_all() called." << std::endl;
+            std::cout << "[Main] MusicWidget show_all() called." << std::endl;
+
         } catch (const Glib::Error& ex) {
-            std::cerr << "ERROR: Failed to create or show MusicWidget (Glib::Error): " << ex.what() << std::endl;
-            app->quit(); // 위젯 생성 실패 시 애플리케이션 종료
+            std::cerr << "[Main] ERROR: Failed to create or show MusicWidget (Glib::Error): " << ex.what() << std::endl;
+            app->quit();
         } catch (const std::exception& ex) {
-            std::cerr << "ERROR: Unhandled exception during MusicWidget creation: " << ex.what() << std::endl;
+            std::cerr << "[Main] ERROR: Unhandled exception during MusicWidget creation: " << ex.what() << std::endl;
             app->quit();
         }
     });
 
     int result = app->run(argc, argv);
-    std::cout << "Application finished with code: " << result << std::endl;
+    std::cout << "[Main] Application finished with code: " << result << std::endl;
     return result;
 }
