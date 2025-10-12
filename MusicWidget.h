@@ -29,7 +29,6 @@ protected:
     // Signal handlers (GTK Overrides)
     virtual bool on_button_press_event(GdkEventButton* event) override;
     virtual bool on_map_event(GdkEventAny* event) override;
-    virtual void on_size_allocate(Gtk::Allocation& allocation) override;
     virtual bool on_visibility_notify_event(GdkEventVisibility* event) override;
 
 private:

@@ -47,12 +47,10 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     // 스펙트럼 시뮬레이션을 위한 랜덤 시드 초기화
     std::srand(std::time(0)); 
 
-    set_size_request(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    resize(state.width, state.height);
     move(state.x, state.y);
 
     set_decorated(false);
-    set_resizable(true);
+    set_resizable(false); // 크기 조절 비활성화
     set_keep_above(true);
     set_skip_taskbar_hint(true);
     set_skip_pager_hint(true);
@@ -65,7 +63,10 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_MainBox.set_name("music-widget");
 
     m_MainBox.pack_start(m_TopHBox, false, false, 0);
-    m_AlbumArt.set_size_request(100, 100);
+    
+    // 앨범 아트 크기 고정 (DEFAULT_WIDTH의 50%)
+    int album_art_size = DEFAULT_WIDTH / 2;
+    m_AlbumArt.set_size_request(album_art_size, album_art_size);
     m_AlbumArtOverlay.add(m_AlbumArt);
 
     m_ControlHBox.set_valign(Gtk::ALIGN_CENTER);
@@ -99,9 +100,10 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_InfoVBox.pack_start(m_TrackLabel, false, false, 5);
     m_InfoVBox.pack_start(m_ArtistLabel, false, false, 5);
     
-    // 스펙트럼 위젯 이름 설정 및 최소 크기 확보 (높이 80px)
+    // 스펙트럼 위젯 높이 고정 (DEFAULT_HEIGHT의 30%)
+    int spectrum_height = DEFAULT_HEIGHT * 0.3;
     m_SpectrumWidget.set_name("spectrum-widget");
-    m_SpectrumWidget.set_size_request(-1, 80); 
+    m_SpectrumWidget.set_size_request(-1, spectrum_height); 
     
     m_InfoVBox.pack_start(m_SpectrumWidget, false, false, 25);
 
@@ -448,19 +450,4 @@ void MusicWidget::on_hide_event()
 {
     std::cout << "[Debug] on_hide_event called. Saving window state." << std::endl;
     m_settings_manager.save_state(get_window_state());
-}
-
-void MusicWidget::on_size_allocate(Gtk::Allocation& allocation)
-{
-    // 부모 클래스의 on_size_allocate 호출
-    Gtk::Window::on_size_allocate(allocation);
-
-    // 위젯의 현재 크기 가져오기
-    int widget_width = allocation.get_width();
-    int widget_height = allocation.get_height();
-
-    // 기타 레이블 등의 위치 조정은 Gtk::Box의 pack_start/pack_end 설정에 따라 자동으로 이루어짐
-    // 필요하다면 여기에서 추가적인 수동 조정을 할 수 있습니다。
-    std::cout << "[Debug] on_size_allocate called. New size: " 
-              << widget_width << "x" << widget_height << std::endl;
 }

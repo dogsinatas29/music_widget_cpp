@@ -55,6 +55,9 @@ int main(int argc, char* argv[])
             widget->set_type_hint(Gdk::WINDOW_TYPE_HINT_DOCK);
             widget->set_keep_above(true);   
             widget->set_skip_taskbar_hint(true); 
+            widget->set_default_size(initialState.width, initialState.height);
+            widget->set_default_size(initialState.width, initialState.height);
+            widget->set_default_size(initialState.width, initialState.height);
             
             app->add_window(*widget);
             std::cout << "[Main] MusicWidget added to application." << std::endl;
