@@ -1,5 +1,5 @@
 # Music Widget Cpp
-
+       https://github.com/user-attachments/assets/caaebb00-7cbe-47ca-9261-a5bc64d2238f
 ## 개요
 이 프로젝트는 GTK3 기반의 음악 플레이어 위젯입니다. 데스크탑 화면에 현재 재생 중인 음악 정보를 표시하고 제어하는 기능을 제공합니다.
 
