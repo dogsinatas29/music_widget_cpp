@@ -1,13 +1,11 @@
-#ifndef WINDOWSTATE_H
-#define WINDOWSTATE_H
+#pragma once
 
-// MusicWidget의 상태를 저장하기 위한 구조체
+// Canonical definition of the struct
 struct WindowState {
     int x = 0;
     int y = 0;
-    int width = 200;
-    int height = 200;
+    int width = 800;
+    int height = 600;
+    bool is_maximized = false;
 };
-
-#endif // WINDOWSTATE_H
 

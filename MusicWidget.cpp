@@ -4,8 +4,8 @@
 #include "SettingsManager.h"
 #include <iostream>
 #include <cmath>
-#include <cstdlib>   // std::rand, std::srand
-#include <ctime>     // std::time
+#include <cstdlib> // std::rand, std::srand
+#include <ctime>   // std::time
 #include <glibmm/main.h>
 #include <sigc++/bind.h>
 #include <gdkmm/pixbuf.h> // Gdk::Pixbuf 사용을 위해 추가
@@ -13,6 +13,7 @@
 #include <vector>
 #include <map>
 #include <cstdio>
+#include <algorithm> // for std::min
 
 // D-Bus 관련 헤더
 #include <giomm/dbusconnection.h>
@@ -28,15 +29,15 @@ const double DEFAULT_OPACITY = 0.8;
 MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsManager)
     : m_settings_manager(settingsManager),
       m_MainBox(Gtk::Orientation::ORIENTATION_VERTICAL, 5),
-      m_TopHBox(Gtk::Orientation::ORIENTATION_HORIZONTAL, 5), // 초기화 리스트에 추가
+      m_TopHBox(Gtk::Orientation::ORIENTATION_HORIZONTAL, 5),
       m_ControlHBox(Gtk::Orientation::ORIENTATION_HORIZONTAL, 5),
-      m_InfoVBox(Gtk::Orientation::ORIENTATION_VERTICAL, 5), // 초기화 리스트에 추가
-      m_AlbumArtOverlay(), // 초기화 리스트에 추가
-      m_AlbumArtVBox(), // 초기화 리스트에 추가
-      m_AlbumArtControlBox(), // 초기화 리스트에 추가
+      m_InfoVBox(Gtk::Orientation::ORIENTATION_VERTICAL, 5),
+      m_AlbumArtOverlay(),
+      m_AlbumArtVBox(),
+      m_AlbumArtControlBox(),
       m_AlbumArt("media-optical", Gtk::ICON_SIZE_DIALOG),
-      m_TrackLabel("Test Track Label"),
-      m_ArtistLabel("Test Artist Label"),
+      m_TrackLabel("No Music Playing"),
+      m_ArtistLabel("Connects to MPRIS v2 Player"),
       m_PrevButton(),
       m_PlayPauseButton(),
       m_NextButton(),
@@ -45,12 +46,13 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
       m_is_dragging(false)
 {
     // 스펙트럼 시뮬레이션을 위한 랜덤 시드 초기화
-    std::srand(std::time(0)); 
+    std::srand(std::time(0));
 
+    // 이전 상태로 창 위치 설정
     move(state.x, state.y);
 
     set_decorated(false);
-    set_resizable(false); // 크기 조절 비활성화
+    set_resizable(false); // 크기 조절 비활성화 유지
     set_keep_above(true);
     set_skip_taskbar_hint(true);
     set_skip_pager_hint(true);
@@ -64,7 +66,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
 
     m_MainBox.pack_start(m_TopHBox, false, false, 0);
     
-    // 앨범 아트 크기 고정 (DEFAULT_WIDTH의 50%)
+    // 앨범 아트 크기 고정 
     int album_art_size = DEFAULT_WIDTH / 2;
     m_AlbumArt.set_size_request(album_art_size, album_art_size);
     m_AlbumArtOverlay.add(m_AlbumArt);
@@ -100,11 +102,14 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_InfoVBox.pack_start(m_TrackLabel, false, false, 5);
     m_InfoVBox.pack_start(m_ArtistLabel, false, false, 5);
     
-    // 스펙트럼 위젯 높이 고정 (DEFAULT_HEIGHT의 30%)
-    int spectrum_height = DEFAULT_HEIGHT * 0.3;
+    // =======================================================
+    // FIX: 스펙트럼 위젯의 강제 높이 설정 제거
+    // 창 크기 축소 시 유연하게 위젯 크기가 줄어들도록 합니다.
+    // m_SpectrumWidget.set_size_request(-1, spectrum_height); 이 부분을 제거합니다.
     m_SpectrumWidget.set_name("spectrum-widget");
-    m_SpectrumWidget.set_size_request(-1, spectrum_height); 
+    // =======================================================
     
+    // 스펙트럼 위젯은 InfoVBox에 추가될 때 확장되지 않도록 합니다.
     m_InfoVBox.pack_start(m_SpectrumWidget, false, false, 25);
 
     m_PrevButton.set_image_from_icon_name("media-skip-backward", Gtk::ICON_SIZE_BUTTON);
@@ -152,10 +157,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
 
     m_stick_timer_connection = Glib::signal_timeout().connect(sigc::mem_fun(*this, &MusicWidget::on_stick_timer), 250);
     
-    // ========================================================================
-    // [핵심 수정] 스펙트럼 시뮬레이션 타이머 연결 (50ms)
-    // ========================================================================
-    // 스펙트럼 위젯에 움직임을 주기 위한 임시 랜덤 데이터 타이머
+    // 스펙트럼 시뮬레이션 타이머 연결 (50ms)
     m_spectrum_timer_connection = Glib::signal_timeout().connect(
         sigc::mem_fun(*this, &MusicWidget::on_spectrum_simulation_timer), 50
     );
@@ -170,18 +172,18 @@ MusicWidget::~MusicWidget() {
     if (m_stick_timer_connection.connected()) {
         m_stick_timer_connection.disconnect();
     }
-    // ========================================================================
-    // [핵심 수정] 스펙트럼 시뮬레이션 타이머 연결 해제
-    // ========================================================================
+    // 스펙트럼 시뮬레이션 타이머 연결 해제
     if (m_spectrum_timer_connection.connected()) {
         m_spectrum_timer_connection.disconnect();
     }
+    // Gio::DBus::unwatch_name은 Gio::DBus::watch_name을 통해 반환된 ID를 사용해야 합니다.
     Gio::DBus::unwatch_name(m_name_watch_id);
 }
 
 // ========================================================================
-// [핵심 추가] 스펙트럼 시뮬레이션 타이머 함수
+// 멤버 함수 구현 (이전 오류 해결을 위해 필수)
 // ========================================================================
+
 bool MusicWidget::on_spectrum_simulation_timer()
 {
     // 1. 스펙트럼 데이터 시뮬레이션
@@ -213,17 +215,19 @@ bool MusicWidget::on_map_event(GdkEventAny* event) {
 }
 
 bool MusicWidget::on_button_press_event(GdkEventButton* event) {
+    // Ctrl + 클릭 시 이동 시작
     if (event->type == GDK_BUTTON_PRESS && event->button == 1 && (event->state & GDK_CONTROL_MASK)) {
         begin_move_drag(event->button, event->x_root, event->y_root, event->time);
         return true;
     }
+    // 일반 클릭 이벤트 무시 (이동이 목적이므로)
     return false;
 }
 
 void MusicWidget::init_dbus() {
     m_name_watch_id = Gio::DBus::watch_name(
         Gio::DBus::BUS_TYPE_SESSION,
-        "org.mpris.MediaPlayer2.rhythmbox",
+        "org.mpris.MediaPlayer2.rhythmbox", // Rhythmbox 대신 범용 이름 사용 가능
         sigc::mem_fun(*this, &MusicWidget::on_name_appeared),
         sigc::mem_fun(*this, &MusicWidget::on_name_vanished)
     );
@@ -232,7 +236,7 @@ void MusicWidget::init_dbus() {
 void MusicWidget::update_player_status() {
     if (!m_player_proxy || !m_properties_proxy) {
         m_TrackLabel.set_text("No Player Active");
-        m_ArtistLabel.set_text("");
+        m_ArtistLabel.set_text("Ctrl + Click to Move");
         m_AlbumArt.set_from_icon_name("media-optical", Gtk::ICON_SIZE_DIALOG);
         m_PlayPauseButton.set_image_from_icon_name("media-playback-start", Gtk::ICON_SIZE_BUTTON);
         return;
@@ -288,9 +292,12 @@ void MusicWidget::update_player_status() {
         m_TrackLabel.set_text(title);
         m_ArtistLabel.set_text(artist);
 
+        // 앨범 아트 로딩
         if (!art_url_str.empty() && art_url_str.substr(0, 7) == "file://") {
             try {
+                // substr(7)은 "file://" 부분을 제거하여 로컬 파일 경로만 남깁니다.
                 auto pixbuf = Gdk::Pixbuf::create_from_file(art_url_str.substr(7));
+                // 앨범 아트 크기 (100x100)
                 m_AlbumArt.set(pixbuf->scale_simple(100, 100, Gdk::INTERP_BILINEAR));
             } catch (const Glib::Error& e) {
                 m_AlbumArt.set_from_icon_name("media-optical", Gtk::ICON_SIZE_DIALOG);
@@ -327,8 +334,10 @@ void MusicWidget::on_play_pause_clicked() { call_player_method("PlayPause"); }
 void MusicWidget::on_next_clicked() { call_player_method("Next"); }
 
 void MusicWidget::find_and_update_player() {
-    m_current_player_bus_name = "org.mpris.MediaPlayer2.rhythmbox";
+    // 임시로 Rhythmbox로 고정. 실제로는 `org.mpris.MediaPlayer2`를 소유한 모든 이름 조회 필요.
+    m_current_player_bus_name = "org.mpris.MediaPlayer2.rhythmbox"; 
     try {
+        // DBus::Proxy::create_sync는 Glib::RefPtr<Gio::DBus::Proxy>를 반환
         m_player_proxy = Gio::DBus::Proxy::create_sync(m_dbus_connection, m_current_player_bus_name, "/org/mpris/MediaPlayer2", "org.mpris.MediaPlayer2.Player");
         m_properties_proxy = Gio::DBus::Proxy::create_sync(m_dbus_connection, m_current_player_bus_name, "/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties");
                                                         
@@ -347,6 +356,7 @@ void MusicWidget::on_properties_changed(
     const Glib::ustring& signal_name,
     const Glib::VariantContainerBase& parameters)
 {
+    // PropertiesChanged 시그널이 발생하면 상태 업데이트
     if (signal_name == "PropertiesChanged") {
         update_player_status();
     }
@@ -355,6 +365,7 @@ void MusicWidget::on_properties_changed(
 void MusicWidget::on_name_appeared(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name, const Glib::ustring& name_owner) {
     m_dbus_connection = connection;
     find_and_update_player();
+    // 1초마다 진행률을 업데이트하는 타이머를 연결합니다.
     if (!m_timer_connection.connected()) {
         m_timer_connection = Glib::signal_timeout().connect(sigc::mem_fun(*this, &MusicWidget::update_progress), 1000);
     }
@@ -376,11 +387,13 @@ bool MusicWidget::update_progress() {
     if (!m_properties_proxy) return false;
 
     try {
+        // Get Position
         auto position_variant_container = m_properties_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", "Position")));
         Glib::Variant<Glib::Variant<gint64>> position_variant;
         position_variant_container.get_child(position_variant, 0);
-        gint64 position = position_variant.get().get();
+        gint64 position = position_variant.get().get(); // microseconds
 
+        // Get Metadata (to get Length)
         auto metadata_variant_container = m_properties_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", "Metadata")));
         Glib::Variant<Glib::Variant<std::map<Glib::ustring, Glib::VariantBase>>> metadata_variant;
         metadata_variant_container.get_child(metadata_variant, 0);
@@ -388,7 +401,7 @@ bool MusicWidget::update_progress() {
 
         gint64 length = 0;
         if (metadata_map.count("mpris:length")) {
-            length = Glib::VariantBase::cast_dynamic<Glib::Variant<gint64>>(metadata_map["mpris:length"]).get();
+            length = Glib::VariantBase::cast_dynamic<Glib::Variant<gint64>>(metadata_map["mpris:length"]).get(); // microseconds
         }
 
         if (length > 0) {
@@ -433,6 +446,7 @@ WindowState MusicWidget::get_window_state()
 
 bool MusicWidget::on_visibility_notify_event(GdkEventVisibility* event)
 {
+    // 창이 완전히 가려지면 숨기기 (유니티나 일부 WM에서 작동)
     if (event->state == GDK_VISIBILITY_FULLY_OBSCURED) {
         std::cout << "[Debug] Visibility changed to FULLY_OBSCURED. Hiding window." << std::endl;
         hide();
@@ -442,12 +456,15 @@ bool MusicWidget::on_visibility_notify_event(GdkEventVisibility* event)
 
 bool MusicWidget::on_stick_timer()
 {
-    stick();
+    // 250ms마다 창을 '모든 작업 공간에 고정(stick)' 상태로 유지
+    stick(); 
     return true;
 }
 
 void MusicWidget::on_hide_event()
 {
     std::cout << "[Debug] on_hide_event called. Saving window state." << std::endl;
+    // 창이 닫히기 직전에 상태 저장
     m_settings_manager.save_state(get_window_state());
 }
+

@@ -1,26 +1,22 @@
-#ifndef SETTINGSMANAGER_H
-#define SETTINGSMANAGER_H
+#pragma once
 
-#include <iostream>
 #include <string>
-#include "WindowState.h" // WindowState 정의를 가져옴
-
-// MusicWidget의 상태를 저장하기 위한 구조체 (정의 제거)
-// struct WindowState {
-//     int x = 0;
-//     int y = 0;
-//     int width = 600;
-//     int height = 600;
-// };
+// WindowState 구조체의 정의를 가져옵니다.
+#include "WindowState.h" 
 
 class SettingsManager
 {
 public:
+    // 기본 생성자 선언 추가 (SettingsManager.cpp와 일치)
     SettingsManager();
-    // 윈도우 상태 저장/로드 함수 선언
+    
+    // WindowState 로딩을 위해 파일 이름 인수를 받는 생성자입니다.
+    SettingsManager(const std::string& filename); 
+
     void save_state(const WindowState& state);
     WindowState load_state();
-};
 
-#endif // SETTINGSMANAGER_H
+private:
+    std::string m_filepath;
+};
 
