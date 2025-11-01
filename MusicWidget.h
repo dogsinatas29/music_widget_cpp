@@ -1,7 +1,6 @@
 #ifndef MUSIC_WIDGET_H
 #define MUSIC_WIDGET_H
 
-#include "SpectrumWidget.h"
 #include "WindowState.h"
 #include <gtkmm.h>
 #include <string>
@@ -30,6 +29,7 @@ protected:
     virtual bool on_button_press_event(GdkEventButton* event) override;
     virtual bool on_map_event(GdkEventAny* event) override;
     virtual bool on_visibility_notify_event(GdkEventVisibility* event) override;
+    virtual void on_size_allocate(Gtk::Allocation& allocation) override;
 
 private:
     SettingsManager& m_settings_manager;
@@ -55,7 +55,6 @@ private:
     Gtk::Button m_PlayPauseButton;
     Gtk::Button m_NextButton;
 
-    SpectrumWidget m_SpectrumWidget;
     Gtk::ProgressBar m_ProgressBar;
 
     // ===================================
@@ -76,9 +75,6 @@ private:
     // 타입을 sigc::connection으로 변경하여 컴파일 오류 해결
     sigc::connection m_stick_timer_connection;
     
-    // 스펙트럼 시뮬레이션 타이머
-    sigc::connection m_spectrum_timer_connection;
-
     // ===================================
     // Internal Methods
     // ===================================
@@ -103,7 +99,6 @@ private:
     // Timer Handlers
     bool update_progress();
     bool on_stick_timer();
-    bool on_spectrum_simulation_timer();
     void on_hide_event();
 };
 

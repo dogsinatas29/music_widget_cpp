@@ -16,7 +16,6 @@ set(SOURCE_FILES
     main.cpp
     MusicWidget.cpp
     SettingsManager.cpp
-    SpectrumWidget.cpp
 )
 
 # Add executable

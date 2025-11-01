@@ -5,7 +5,7 @@ struct WindowState {
     int x = 0;
     int y = 0;
     int width = 800;
-    int height = 600;
+    int height = 400;
     bool is_maximized = false;
 };
 

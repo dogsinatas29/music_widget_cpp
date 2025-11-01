@@ -6,7 +6,8 @@
 #include <algorithm>
 
 SpectrumWidget::SpectrumWidget() 
-    : m_spectrum_data(50, 0.0)
+    : m_spectrum_data(50, 0.0),
+      m_max_drawing_height(0) // 초기화
 {
     // 초기 50개의 스펙트럼 데이터를 0.0으로 초기화합니다.
 }
@@ -21,11 +22,18 @@ void SpectrumWidget::update_spectrum_data(const std::vector<double>& data)
     queue_draw(); // 위젯을 다시 그리도록 요청
 }
 
+void SpectrumWidget::set_max_drawing_height(int height)
+{
+    m_max_drawing_height = height;
+    queue_draw(); // 높이 변경 시 다시 그리도록 요청
+}
+
 bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
-    const int height = allocation.get_height();
+    // 실제 그릴 높이를 m_max_drawing_height와 할당된 높이 중 작은 값으로 제한
+    const int draw_height = (m_max_drawing_height > 0) ? std::min(allocation.get_height(), m_max_drawing_height) : allocation.get_height();
 
     // 배경을 투명하게 설정
     cr->set_source_rgba(0.0, 0.0, 0.0, 0.0); 
@@ -44,10 +52,10 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
         double bar_height_ratio = m_spectrum_data[i];
         
         // 데이터는 0.0에서 1.0 사이, 높이는 10% ~ 100% 사용
-        double bar_height = std::max(height * 0.1, bar_height_ratio * height * 0.9);
+        double bar_height = std::max(draw_height * 0.1, bar_height_ratio * draw_height * 0.9);
         
         double x = i * (bar_width + bar_spacing);
-        double y = height - bar_height;
+        double y = draw_height - bar_height;
         
         // 색상 설정: 옅은 보라색에서 밝은 시안색으로 그라데이션
         double color_r = 0.5 + 0.5 * bar_height_ratio; // Red (0.5 to 1.0)
