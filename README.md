@@ -48,4 +48,4 @@ make
 ```
 
 ## 스크린샷
-![Music Widget Screenshot](https://github.com/user-attachments/assets/caaebb00-7cbe-47ca-9261-a5bc64d2238f)
+<img width="448" height="228" alt="Music Widget Screenshot" src="https://github.com/user-attachments/assets/caaebb00-7cbe-47ca-9261-a5bc64d2238f" />
