@@ -48,8 +48,4 @@ make
 ```
 
 ## 스크린샷
-여기에 위젯의 스크린샷을 추가해 주세요.
-예시:
-```markdown
-![Music Widget Screenshot](path/to/your/screenshot.png)
-```
+![Music Widget Screenshot](https://github.com/user-attachments/assets/caaebb00-7cbe-47ca-9261-a5bc64d2238f)
