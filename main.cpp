@@ -1,15 +1,15 @@
 #include <gtkmm/application.h>
 #include "MusicWidget.h"
-#include "SettingsManager.h" // 설정 관리자 헤더 포함
+#include "SettingsManager.h" 
 #include <iostream>
 #include <exception>
-#include <streambuf> // std::cout.rdbuf()->pubsetbuf(0, 0) 사용을 위해 추가
+#include <streambuf> 
 
 // Gdk::WindowTypeHint를 사용하기 위해 gdkmm 헤더를 포함합니다.
 #include <gdkmm/window.h> 
 
 const int DEFAULT_WIDTH = 200;
-const int DEFAULT_HEIGHT = 200;
+const int DEFAULT_HEIGHT = 200; // 초기 기본 높이
 
 int main(int argc, char* argv[])
 {
@@ -34,18 +34,25 @@ int main(int argc, char* argv[])
 
     app->signal_activate().connect([&app, &settingsManager]() {
         std::cout << "[Main] Application activated, creating MusicWidget." << std::endl;
-         try {
+          try {
             // 설정 파일에서 창 상태 불러오기
             WindowState initialState = settingsManager.load_state();
             std::cout << "[Main] Initial WindowState loaded." << std::endl;
             
-            // 로드된 크기가 기본값보다 크거나 유효하지 않으면 기본값으로 재설정
+            // 로드된 크기가 기본값과 다르거나 유효하지 않으면 기본값으로 재설정
             if (initialState.width != DEFAULT_WIDTH || initialState.height != DEFAULT_HEIGHT) {
                 initialState.width = DEFAULT_WIDTH;
                 initialState.height = DEFAULT_HEIGHT;
                 std::cout << "[Main] Window size reset to default: " 
                           << DEFAULT_WIDTH << "x" << DEFAULT_HEIGHT << std::endl;
             }
+            
+            // =======================================================
+            // ✨ 핵심 수정 1: 세로 높이를 1/3로 강제 축소
+            initialState.height = DEFAULT_HEIGHT / 3; 
+            std::cout << "[Main] Window height forcibly reduced to 1/3: " 
+                      << initialState.height << std::endl;
+            // =======================================================
             
             // 불러온 상태와 settingsManager를 전달하여 MusicWidget 생성
             MusicWidget* widget = new MusicWidget(initialState, settingsManager);
@@ -55,9 +62,9 @@ int main(int argc, char* argv[])
             widget->set_type_hint(Gdk::WINDOW_TYPE_HINT_DOCK);
             widget->set_keep_above(true);   
             widget->set_skip_taskbar_hint(true); 
-            widget->set_default_size(initialState.width, initialState.height);
-            widget->set_default_size(initialState.width, initialState.height);
-            widget->set_default_size(initialState.width, initialState.height);
+            
+            // 중복 호출 제거 및 초기 설정된 크기 적용
+            widget->set_default_size(initialState.width, initialState.height); 
             
             app->add_window(*widget);
             std::cout << "[Main] MusicWidget added to application." << std::endl;
