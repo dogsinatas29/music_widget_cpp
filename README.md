@@ -1,5 +1,5 @@
 # Music Widget Cpp
-       https://github.com/user-attachments/assets/caaebb00-7cbe-47ca-9261-a5bc64d2238f
+
 ## 개요
 이 프로젝트는 GTK3 기반의 음악 플레이어 위젯입니다. 데스크탑 화면에 현재 재생 중인 음악 정보를 표시하고 제어하는 기능을 제공합니다.
 
@@ -43,11 +43,4 @@ make
 또는 백그라운드에서 실행하려면:
 ```bash
 ./MusicWidgetCpp &
-```
-
-## 스크린샷
-여기에 위젯의 스크린샷을 추가해 주세요.
-예시:
-```markdown
-<img width="448" height="228" alt="Music Widget Screenshot" src="https://github.com/user-attachments/assets/caaebb00-7cbe-47ca-9261-a5bc64d2238f" /> 
 ```
