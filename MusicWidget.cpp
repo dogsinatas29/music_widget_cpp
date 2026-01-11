@@ -63,9 +63,11 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
 
     // 창의 투명도(RGBA) 활성화
     auto screen_for_visual = get_screen();
-    auto visual = screen_for_visual->get_rgba_visual();
-    if (visual) {
-        gtk_widget_set_visual(GTK_WIDGET(gobj()), visual->gobj());
+    if (screen_for_visual) {
+        auto visual = screen_for_visual->get_rgba_visual();
+        if (visual) {
+            gtk_widget_set_visual(GTK_WIDGET(gobj()), visual->gobj());
+        }
     }
     set_app_paintable(true); // 배경을 직접 제어하기 위해 설정
     set_opacity(DEFAULT_OPACITY);
@@ -243,9 +245,20 @@ bool MusicWidget::on_motion_notify_event(GdkEventMotion* event) {
 
 void MusicWidget::update_spectrum_simulation() {
     static std::vector<double> spectrum(30, 0.0);
+    bool is_playing = false;
+    
+    // 플레이어가 재생 중일 때만 움직이도록 설정
+    if (m_properties_proxy) {
+        try {
+            auto val = m_properties_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", "PlaybackStatus")));
+            Glib::Variant<Glib::Variant<Glib::ustring>> status_variant;
+            val.get_child(status_variant, 0);
+            if (status_variant.get().get() == "Playing") is_playing = true;
+        } catch (...) {}
+    }
+
     for (int i = 0; i < 30; ++i) {
-        // 부드러운 움직임을 위해 랜덤값에 가중치 부여
-        double target = static_cast<double>(std::rand()) / RAND_MAX;
+        double target = is_playing ? (static_cast<double>(std::rand()) / RAND_MAX) : 0.05;
         spectrum[i] = spectrum[i] * 0.7 + target * 0.3;
     }
     m_SpectrumWidget.update_spectrum_data(spectrum);
@@ -260,12 +273,12 @@ void MusicWidget::update_player_status() {
         m_TrackLabel.set_text("No Player Active");
         m_ArtistLabel.set_text("Drag to Move");
         // 앨범 아트 크기 조절 (창 높이에 맞춰 조절, 최소 60, 최대 150 등 제한 가능)
-        int win_height;
-        get_size(win_height, win_height);
-        int album_art_size = std::max(60, std::min(150, (win_height - 60))); // 하단 CAVA 등을 고려하여 높이 조정
+        int win_width, win_height;
+        get_size(win_width, win_height);
+        int album_art_size = std::max(60, std::min(150, (win_height - 60))); 
         m_AlbumArt.set_size_request(album_art_size, album_art_size);
         m_AlbumArt.set_from_icon_name("media-optical", Gtk::ICON_SIZE_DIALOG);
-        m_PlayPauseButton.set_image_from_icon_name("media-playback-start", Gtk::ICON_SIZE_BUTTON);
+        m_PlayPauseButton.set_image_from_icon_name("media-playback-start-symbolic", Gtk::ICON_SIZE_BUTTON);
         return;
     }
 
@@ -354,9 +367,9 @@ void MusicWidget::update_player_status() {
         }
 
         if (playback_status == "Playing") {
-            m_PlayPauseButton.set_image_from_icon_name("media-playback-pause", Gtk::ICON_SIZE_BUTTON);
+            m_PlayPauseButton.set_image_from_icon_name("media-playback-pause-symbolic", Gtk::ICON_SIZE_BUTTON);
         } else {
-            m_PlayPauseButton.set_image_from_icon_name("media-playback-start", Gtk::ICON_SIZE_BUTTON);
+            m_PlayPauseButton.set_image_from_icon_name("media-playback-start-symbolic", Gtk::ICON_SIZE_BUTTON);
         }
 
     } catch (const Glib::Error& ex) {
@@ -381,20 +394,6 @@ void MusicWidget::on_play_pause_clicked() { call_player_method("PlayPause"); }
 void MusicWidget::on_next_clicked() { call_player_method("Next"); }
 
 void MusicWidget::find_and_update_player() {
-    std::cerr << "[Debug] find_and_update_player() called." << std::endl << std::flush;
-    std::cout << "[Debug] find_and_update_player() called." << std::endl << std::flush;
-
-    // Reset current player state
-    m_player_proxy.reset();
-    m_properties_proxy.reset();
-    m_current_player_bus_name = "";
-    if (m_timer_connection.connected()) {
-        m_timer_connection.disconnect();
-        std::cerr << "[Debug] Disconnected progress timer." << std::endl << std::flush;
-    }
-
-    std::cout << "[Debug] find_and_update_player() called." << std::endl << std::flush;
-
     try {
         if (!m_dbus_proxy) {
             m_dbus_proxy = Gio::DBus::Proxy::create_for_bus_sync(Gio::DBus::BUS_TYPE_SESSION, "org.freedesktop.DBus", "/org/freedesktop/DBus", "org.freedesktop.DBus");
@@ -493,6 +492,8 @@ void MusicWidget::find_and_update_player() {
             m_timer_connection.disconnect();
         }
         update_player_status();
+    } catch (...) {
+        std::cerr << "Unknown error in find_and_update_player" << std::endl;
     }
 }
 
