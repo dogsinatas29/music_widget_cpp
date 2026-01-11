@@ -27,10 +27,16 @@ sudo apt update
 sudo apt install build-essential pkg-config \
                  libgtkmm-3.0-dev libglibmm-2.4-dev \
                  libgirepository1.0-dev libcairo2-dev \
-                 libdbus-1-dev cmake
+                 libdbus-1-dev cmake git
 ```
 
-### 2. 프로젝트 빌드
+### 2. 프로젝트 클론
+```bash
+git clone https://github.com/dogsinatas29/music_widget_cpp.git
+cd music_widget_cpp
+```
+
+### 3. 프로젝트 빌드
 프로젝트 루트 디렉토리에서 다음 명령어를 실행합니다.
 ```bash
 mkdir build
