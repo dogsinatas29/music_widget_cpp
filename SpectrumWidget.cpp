@@ -7,9 +7,11 @@
 
 SpectrumWidget::SpectrumWidget() 
     : m_spectrum_data(50, 0.0),
-      m_max_drawing_height(0) // 초기화
+      m_max_drawing_height(0),
+      m_color_preset(VisualizerColor::GREEN)
 {
     // 초기 50개의 스펙트럼 데이터를 0.0으로 초기화합니다.
+    add_events(Gdk::BUTTON_PRESS_MASK);
 }
 
 SpectrumWidget::~SpectrumWidget()
@@ -26,6 +28,12 @@ void SpectrumWidget::set_max_drawing_height(int height)
 {
     m_max_drawing_height = height;
     queue_draw(); // 높이 변경 시 다시 그리도록 요청
+}
+
+void SpectrumWidget::set_color_preset(VisualizerColor preset)
+{
+    m_color_preset = preset;
+    queue_draw();
 }
 
 bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
@@ -60,11 +68,28 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
         double x = i * (bar_width + bar_spacing);
         double y = draw_height - bar_height;
         
-        // 색상 설정: 스포티파이 느낌의 밝은 그린 계열
-        cr->set_source_rgb(0.11, 0.72, 0.33); 
-        
-        if (bar_height_ratio > 0.7) {
-            cr->set_source_rgb(0.12, 0.84, 0.38); // 더 높은 바는 더 밝게
+        // 색상 프리셋 적용
+        switch (m_color_preset) {
+            case VisualizerColor::GREEN:
+                cr->set_source_rgb(0.11, 0.72, 0.33); 
+                if (bar_height_ratio > 0.7) cr->set_source_rgb(0.12, 0.84, 0.38);
+                break;
+            case VisualizerColor::BLUE:
+                cr->set_source_rgb(0.1, 0.4, 0.9);
+                if (bar_height_ratio > 0.7) cr->set_source_rgb(0.2, 0.6, 1.0);
+                break;
+            case VisualizerColor::PURPLE:
+                cr->set_source_rgb(0.6, 0.2, 0.8);
+                if (bar_height_ratio > 0.7) cr->set_source_rgb(0.8, 0.4, 1.0);
+                break;
+            case VisualizerColor::ORANGE:
+                cr->set_source_rgb(1.0, 0.5, 0.0);
+                if (bar_height_ratio > 0.7) cr->set_source_rgb(1.0, 0.7, 0.2);
+                break;
+            case VisualizerColor::WHITE:
+                cr->set_source_rgba(1.0, 1.0, 1.0, 0.6);
+                if (bar_height_ratio > 0.7) cr->set_source_rgba(1.0, 1.0, 1.0, 0.9);
+                break;
         }
 
         // 막대를 둥근 모서리로 그리기
@@ -81,5 +106,17 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     }
 
     return true;
+}
+
+bool SpectrumWidget::on_button_press_event(GdkEventButton* event)
+{
+    if (event->type == GDK_BUTTON_PRESS && event->button == 1) { // 좌클릭
+        int next_color = static_cast<int>(m_color_preset) + 1;
+        if (next_color > 4) next_color = 0;
+        m_color_preset = static_cast<VisualizerColor>(next_color);
+        queue_draw();
+        return true;
+    }
+    return Gtk::DrawingArea::on_button_press_event(event);
 }
 
