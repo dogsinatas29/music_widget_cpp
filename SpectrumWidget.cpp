@@ -35,10 +35,13 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     // 실제 그릴 높이를 m_max_drawing_height와 할당된 높이 중 작은 값으로 제한
     const int draw_height = (m_max_drawing_height > 0) ? std::min(allocation.get_height(), m_max_drawing_height) : allocation.get_height();
 
-    // 배경을 투명하게 설정
+    // 배경을 투명하게 지우기 (깜빡임 방지 및 투명 배경 지원)
+    cr->save();
     cr->set_source_rgba(0.0, 0.0, 0.0, 0.0); 
+    cr->set_operator(Cairo::OPERATOR_SOURCE);
     cr->paint();
-
+    cr->restore();
+    
     if (m_spectrum_data.empty()) {
         return true;
     }
@@ -57,11 +60,12 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
         double x = i * (bar_width + bar_spacing);
         double y = draw_height - bar_height;
         
-        // 색상 설정: 옅은 보라색에서 밝은 시안색으로 그라데이션
-        double color_r = 0.5 + 0.5 * bar_height_ratio; // Red (0.5 to 1.0)
-        double color_g = 0.5 + 0.5 * bar_height_ratio; // Green (0.5 to 1.0)
-        double color_b = 0.8 + 0.2 * bar_height_ratio; // Blue (0.8 to 1.0)
-        cr->set_source_rgb(color_r, color_g, color_b);
+        // 색상 설정: 스포티파이 느낌의 밝은 그린 계열
+        cr->set_source_rgb(0.11, 0.72, 0.33); 
+        
+        if (bar_height_ratio > 0.7) {
+            cr->set_source_rgb(0.12, 0.84, 0.38); // 더 높은 바는 더 밝게
+        }
 
         // 막대를 둥근 모서리로 그리기
         double radius = bar_width / 4.0; 

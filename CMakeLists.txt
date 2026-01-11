@@ -16,6 +16,8 @@ set(SOURCE_FILES
     main.cpp
     MusicWidget.cpp
     SettingsManager.cpp
+    CavaWidget.cpp
+    SpectrumWidget.cpp
 )
 
 # Add executable

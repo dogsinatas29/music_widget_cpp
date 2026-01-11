@@ -1,38 +1,80 @@
-/* style.css */
+/* premium-style.css */
 
 #music-widget {
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.6), rgba(10, 10, 10, 0.75));
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 12px;
 }
 
 label {
-    color: white;
-    font-weight: bold;
+    color: #ffffff;
+    font-family: "Inter", "Sans", "Pretendard", sans-serif;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-progressbar trough, progressbar progress {
-    border-radius: 3px;
+#track-label {
+    font-size: 16pt;
+    font-weight: 800;
+    margin-bottom: 2px;
 }
 
-progressbar progress {
-    background-image: none;
-    background-color: #1DB954; /* Spotify Green */
+#artist-label {
+    font-size: 11pt;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
 }
 
-.control-button {
-    background: transparent;
+progressbar {
+    margin-top: 8px;
+}
+
+progressbar trough {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    min-height: 6px;
     border: none;
 }
 
+progressbar progress {
+    background: linear-gradient(90deg, #1DB954, #1ed760);
+    border-radius: 4px;
+}
+
+.control-button {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    min-width: 40px;
+    min-height: 40px;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin: 0 4px;
+}
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.1);
+}
+
 .control-button image {
-    color: white;
+    color: #ffffff;
+    -gtk-icon-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.control-button:hover image {
-    color: red;
+#play-pause-button {
+    background: #ffffff;
+    min-width: 48px;
+    min-height: 48px;
 }
 
-#cava-widget {
-    background-color: transparent;
+#play-pause-button image {
+    color: #121212;
+}
+
+#play-pause-button:hover {
+    background: #1DB954;
+    transform: scale(1.1) rotate(5deg);
 }

@@ -2,6 +2,7 @@
 #define MUSIC_WIDGET_H
 
 #include "WindowState.h"
+#include "SpectrumWidget.h"
 #include <gtkmm.h>
 #include <string>
 #include <iostream>
@@ -56,28 +57,37 @@ private:
     Gtk::Button m_NextButton;
 
     Gtk::ProgressBar m_ProgressBar;
+    SpectrumWidget m_SpectrumWidget; // CavaWidget replaced with SpectrumWidget
 
     // ===================================
     // State, DBus & Timer Members
     // ===================================
     bool m_is_dragging;
-    int m_drag_start_x, m_drag_start_y; // 드래그 상태 변수
+    bool m_is_resizing;
+    int m_drag_start_x, m_drag_start_y; 
+    int m_window_start_x, m_window_start_y;
+    int m_window_start_width, m_window_start_height;
+    enum ResizeDirection { NONE, BOTTOM_RIGHT, RIGHT, BOTTOM };
+    ResizeDirection m_resize_dir;
     Glib::ustring m_current_player_bus_name;
 
     // D-Bus
-    guint m_name_watch_id;
-    Glib::RefPtr<Gio::DBus::Connection> m_dbus_connection;
+    // guint m_name_watch_id; // Removed
+    // Glib::RefPtr<Gio::DBus::Connection> m_dbus_connection; // Removed
     Glib::RefPtr<Gio::DBus::Proxy> m_player_proxy;
     Glib::RefPtr<Gio::DBus::Proxy> m_properties_proxy;
+    Glib::RefPtr<Gio::DBus::Proxy> m_dbus_proxy; // Added for org.freedesktop.DBus proxy
 
     // Timer Connections
     sigc::connection m_timer_connection;
     // 타입을 sigc::connection으로 변경하여 컴파일 오류 해결
     sigc::connection m_stick_timer_connection;
+    sigc::connection m_player_discovery_connection; // Added for periodic player discovery timer
     
     // ===================================
     // Internal Methods
     // ===================================
+    bool m_is_updating_ui = false; // Flag to prevent recursion in on_size_allocate
     void init_dbus();
     void find_and_update_player();
     void update_player_status();
@@ -88,8 +98,11 @@ private:
         const Glib::ustring& signal_name,
         const Glib::VariantContainerBase& parameters);
 
-    void on_name_appeared(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name, const Glib::ustring& name_owner);
-    void on_name_vanished(const Glib::RefPtr<Gio::DBus::Connection>& connection, const Glib::ustring& name);
+    virtual bool on_button_release_event(GdkEventButton* event) override;
+    virtual bool on_motion_notify_event(GdkEventMotion* event) override;
+    void update_spectrum_simulation();
+
+    // Removed on_name_appeared and on_name_vanished
     
     // Button Handlers
     void on_prev_clicked();
@@ -99,6 +112,7 @@ private:
     // Timer Handlers
     bool update_progress();
     bool on_stick_timer();
+    bool on_player_discovery_timeout(); // Added for periodic player discovery
     void on_hide_event();
 };
 

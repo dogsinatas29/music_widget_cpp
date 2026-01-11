@@ -1,0 +1,3 @@
+/home/dogsinatas/c_project/music_widget_cpp/CMakeFiles/MusicWidgetCpp.dir
+/home/dogsinatas/c_project/music_widget_cpp/CMakeFiles/edit_cache.dir
+/home/dogsinatas/c_project/music_widget_cpp/CMakeFiles/rebuild_cache.dir
