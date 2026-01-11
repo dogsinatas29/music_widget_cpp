@@ -62,15 +62,12 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     set_skip_pager_hint(true);
 
     // 창의 투명도(RGBA) 활성화
-    auto screen = get_screen();
-    auto visual = screen->get_rgba_visual();
+    auto screen_for_visual = get_screen();
+    auto visual = screen_for_visual->get_rgba_visual();
     if (visual) {
-        set_visual(visual);
+        gtk_widget_set_visual(GTK_WIDGET(gobj()), visual->gobj());
     }
     set_app_paintable(true); // 배경을 직접 제어하기 위해 설정
-
-    set_app_paintable(true);
-    auto screen = Gdk::Screen::get_default();
     set_opacity(DEFAULT_OPACITY);
 
     set_default_size(state.width, state.height); // 초기 창 크기 설정
@@ -147,7 +144,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     auto css_provider = Gtk::CssProvider::create();
     try {
         css_provider->load_from_path("../style.css");
-        Gtk::StyleContext::add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        Gtk::StyleContext::add_provider_for_screen(get_screen(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     } catch (const Glib::Error& ex) {
         std::cerr << "Error loading CSS: " << ex.what() << std::endl;
     }
@@ -216,10 +213,10 @@ bool MusicWidget::on_button_press_event(GdkEventButton* event) {
         }
 
         if (m_is_resizing) {
-            GdkWindowEdge edge;
-            if (m_resize_dir == BOTTOM_RIGHT) edge = GDK_WINDOW_EDGE_SOUTH_EAST;
-            else if (m_resize_dir == RIGHT) edge = GDK_WINDOW_EDGE_EAST;
-            else edge = GDK_WINDOW_EDGE_SOUTH;
+            Gdk::WindowEdge edge;
+            if (m_resize_dir == BOTTOM_RIGHT) edge = Gdk::WINDOW_EDGE_SOUTH_EAST;
+            else if (m_resize_dir == RIGHT) edge = Gdk::WINDOW_EDGE_EAST;
+            else edge = Gdk::WINDOW_EDGE_SOUTH;
 
             begin_resize_drag(edge, event->button, event->x_root, event->y_root, event->time);
             m_is_resizing = false; // OS에 맡겼으므로 플래그 해제
@@ -486,18 +483,9 @@ void MusicWidget::find_and_update_player() {
                 m_timer_connection = Glib::signal_timeout().connect(sigc::mem_fun(*this, &MusicWidget::update_progress), 1000);
             }
             std::cout << "[Debug] Switched to better player: " << m_current_player_bus_name << std::endl;
-        } else if (best_player.empty()) {
-            m_player_proxy.reset();
-            m_properties_proxy.reset();
-            m_current_player_bus_name = "";
-            update_player_status();
         }
     } catch (const Glib::Error& ex) {
         std::cerr << "Error in find_and_update_player: " << ex.what() << std::endl;
-    }
-    } catch (const Glib::Error& ex) {
-        std::cerr << "Error finding and updating player (DBus): " << ex.what() << std::endl << std::flush;
-        std::cerr << "Error finding and updating player (DBus): " << ex.what() << std::endl << std::flush;
         m_player_proxy.reset();
         m_properties_proxy.reset();
         m_current_player_bus_name = "";
