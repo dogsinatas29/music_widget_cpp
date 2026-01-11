@@ -17,7 +17,8 @@
 5.  **위젯 위치 및 크기 자유 조절:** CTRL 키 없이 드래그로 이동 가능하며, 테두리를 잡아 자유롭게 리사이즈 가능 (Wayland 네이티브 드래그 지원).
 6.  **안정적인 스펙트럼 시각화:** CAVA 외부 의존성 없이 위젯 자체에서 부드럽게 작동하는 통합 스펙트럼 시뮬레이션.
 7.  **강력한 안정성:** D-Bus 통신 예외 처리 및 타임아웃 설정을 통해 강제 종료 및 프리징 현상 해결.
-8.  **Wayland 호환성:** Wayland 환경에서도 가상 화면을 따라다니고 정상적으로 동작하도록 최적화.
+8.  **Wayland 호환성:** Wayland 환경 최적화 및 안정적인 동작 보장.
+    *   **주의:** 가상 화면 고정(Sticky) 기능은 **Xorg(X11)**에서만 자동 실행되며, Wayland에서는 컴포지터 보안 정책에 따라 사용자가 창 메뉴에서 수동으로 설정해야 할 수 있습니다.
 
 ### 기술 스택
 *   **언어:** C++11 이상
@@ -70,7 +71,8 @@ This project is a GTK3-based music player widget that displays current track inf
 5.  **Flexible Positioning & Resizing:** Movable via drag-and-drop without the CTRL key, and freely resizable via window edges (Wayland native drag supported).
 6.  **Built-in Spectrum Visualization:** Smooth integrated spectrum simulation that works without external CAVA dependencies.
 7.  **Enhanced Stability:** Robust D-Bus exception handling and timeouts to prevent crashes and freezes.
-8.  **Wayland Compatibility:** Optimized to follow workspaces and function correctly in Wayland environments.
+8.  **Wayland Compatibility:** Optimized for Wayland environments with robust functionality.
+    *   **Note:** The "Sticky" (workspace persistence) feature is fully supported automatically on **Xorg (X11)**. On Wayland, due to compositor security policies, you may need to manually enable "Always on Visible Workspace" via the window menu.
 
 ### Technology Stack
 *   **Language:** C++11 or higher
