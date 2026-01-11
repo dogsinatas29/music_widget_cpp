@@ -41,17 +41,14 @@ private:
     Gtk::VBox m_MainBox;
     Gtk::HBox m_TopHBox;
     Gtk::VBox m_InfoVBox;
-
-    Gtk::VBox m_AlbumArtVBox;
-    Gtk::Overlay m_AlbumArtOverlay;
     
     Gtk::HBox m_ControlHBox;
-    Gtk::HBox m_AlbumArtControlBox;
-
-    Gtk::Image m_AlbumArt;
+    Gtk::Box m_AlbumArtControlBox;
+    Gtk::DrawingArea m_AlbumArtArea; // Image 대신 DrawingArea 사용
+    Glib::RefPtr<Gdk::Pixbuf> m_CurrentPixbuf; // 원본 이미지 보관용
     Gtk::Label m_TrackLabel;
     Gtk::Label m_ArtistLabel;
-
+    Gtk::Label m_AlbumLabel; // 앨범 라벨 추가
     Gtk::Button m_PrevButton;
     Gtk::Button m_PlayPauseButton;
     Gtk::Button m_NextButton;
@@ -100,6 +97,8 @@ private:
 
     virtual bool on_button_release_event(GdkEventButton* event) override;
     virtual bool on_motion_notify_event(GdkEventMotion* event) override;
+    void update_progress_ui();
+    bool on_album_art_draw(const Cairo::RefPtr<Cairo::Context>& cr); // 드로잉 핸들러
     void update_spectrum_simulation();
 
     // Removed on_name_appeared and on_name_vanished

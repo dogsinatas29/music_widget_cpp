@@ -1211,9 +1211,9 @@ CMakeFiles/MusicWidgetCpp.dir/CavaWidget.cpp.o: CavaWidget.cpp \
   /usr/lib/x86_64-linux-gnu/sigc++-2.0/include/sigc++config.h
 
 CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o: MusicWidget.cpp \
-  CavaWidget.h \
   MusicWidget.h \
   SettingsManager.h \
+  SpectrumWidget.h \
   WindowState.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
@@ -1263,7 +1263,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o: MusicWidget.cpp \
   /usr/include/atkmm-1.6/atkmm/relation.h \
   /usr/include/c++/15/algorithm \
   /usr/include/c++/15/array \
-  /usr/include/c++/15/atomic \
   /usr/include/c++/15/backward/auto_ptr.h \
   /usr/include/c++/15/backward/binders.h \
   /usr/include/c++/15/bit \
@@ -1334,7 +1333,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o: MusicWidget.cpp \
   /usr/include/c++/15/bits/std_abs.h \
   /usr/include/c++/15/bits/std_function.h \
   /usr/include/c++/15/bits/std_mutex.h \
-  /usr/include/c++/15/bits/std_thread.h \
   /usr/include/c++/15/bits/stl_algo.h \
   /usr/include/c++/15/bits/stl_algobase.h \
   /usr/include/c++/15/bits/stl_bvector.h \
@@ -1363,7 +1361,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o: MusicWidget.cpp \
   /usr/include/c++/15/bits/streambuf_iterator.h \
   /usr/include/c++/15/bits/string_view.tcc \
   /usr/include/c++/15/bits/stringfwd.h \
-  /usr/include/c++/15/bits/this_thread_sleep.h \
   /usr/include/c++/15/bits/uniform_int_dist.h \
   /usr/include/c++/15/bits/unique_lock.h \
   /usr/include/c++/15/bits/unique_ptr.h \
@@ -1429,7 +1426,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o: MusicWidget.cpp \
   /usr/include/c++/15/string \
   /usr/include/c++/15/string_view \
   /usr/include/c++/15/system_error \
-  /usr/include/c++/15/thread \
   /usr/include/c++/15/tr1/bessel_function.tcc \
   /usr/include/c++/15/tr1/beta_function.tcc \
   /usr/include/c++/15/tr1/ell_integral.tcc \
@@ -4239,9 +4235,9 @@ CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o: SpectrumWidget.cpp \
   /usr/lib/x86_64-linux-gnu/sigc++-2.0/include/sigc++config.h
 
 CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: main.cpp \
-  CavaWidget.h \
   MusicWidget.h \
   SettingsManager.h \
+  SpectrumWidget.h \
   WindowState.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/bitsperlong.h \
@@ -4291,7 +4287,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: main.cpp \
   /usr/include/atkmm-1.6/atkmm/relation.h \
   /usr/include/c++/15/algorithm \
   /usr/include/c++/15/array \
-  /usr/include/c++/15/atomic \
   /usr/include/c++/15/backward/auto_ptr.h \
   /usr/include/c++/15/backward/binders.h \
   /usr/include/c++/15/bit \
@@ -4362,7 +4357,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: main.cpp \
   /usr/include/c++/15/bits/std_abs.h \
   /usr/include/c++/15/bits/std_function.h \
   /usr/include/c++/15/bits/std_mutex.h \
-  /usr/include/c++/15/bits/std_thread.h \
   /usr/include/c++/15/bits/stl_algo.h \
   /usr/include/c++/15/bits/stl_algobase.h \
   /usr/include/c++/15/bits/stl_bvector.h \
@@ -4391,7 +4385,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: main.cpp \
   /usr/include/c++/15/bits/streambuf_iterator.h \
   /usr/include/c++/15/bits/string_view.tcc \
   /usr/include/c++/15/bits/stringfwd.h \
-  /usr/include/c++/15/bits/this_thread_sleep.h \
   /usr/include/c++/15/bits/uniform_int_dist.h \
   /usr/include/c++/15/bits/unique_lock.h \
   /usr/include/c++/15/bits/unique_ptr.h \
@@ -4457,7 +4450,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: main.cpp \
   /usr/include/c++/15/string \
   /usr/include/c++/15/string_view \
   /usr/include/c++/15/system_error \
-  /usr/include/c++/15/thread \
   /usr/include/c++/15/tr1/bessel_function.tcc \
   /usr/include/c++/15/tr1/beta_function.tcc \
   /usr/include/c++/15/tr1/ell_integral.tcc \
@@ -6028,8 +6020,6 @@ CMakeFiles/MusicWidgetCpp.dir/CavaWidget.cpp.o:
 
 /lib/x86_64-linux-gnu/libX11.so.6:
 
-SpectrumWidget.h:
-
 /usr/include/gtkmm-3.0/gtkmm/volumebutton.h:
 
 /usr/include/gtkmm-3.0/gtkmm/treesortable.h:
@@ -6591,6 +6581,8 @@ SpectrumWidget.cpp:
 /usr/include/c++/15/bits/stl_set.h:
 
 /usr/include/c++/15/bits/stl_multiset.h:
+
+SpectrumWidget.h:
 
 SettingsManager.h:
 

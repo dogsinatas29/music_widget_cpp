@@ -16,16 +16,24 @@ label {
 }
 
 #track-label {
-    font-size: 16pt;
+    font-size: 18px;
     font-weight: 800;
+    color: #ffffff;
     margin-bottom: 2px;
 }
 
 #artist-label {
-    font-size: 11pt;
+    font-size: 14px;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+#album-label {
+    font-size: 12px;
+    font-weight: 300;
+    color: rgba(180, 180, 180, 0.7);
+    font-style: italic;
+    margin-bottom: 4px;
 }
 
 progressbar {

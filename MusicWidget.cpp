@@ -30,12 +30,11 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
       m_TopHBox(Gtk::Orientation::ORIENTATION_HORIZONTAL, 0),
       m_ControlHBox(Gtk::Orientation::ORIENTATION_HORIZONTAL, 0),
       m_InfoVBox(Gtk::Orientation::ORIENTATION_VERTICAL, 0),
-      m_AlbumArtOverlay(),
-      m_AlbumArtVBox(),
-      m_AlbumArtControlBox(),
-      m_AlbumArt("media-optical", Gtk::ICON_SIZE_DIALOG),
+      m_AlbumArtControlBox(Gtk::ORIENTATION_VERTICAL, 0),
+      m_AlbumArtArea(),
       m_TrackLabel("No Music Playing"),
-      m_ArtistLabel("Connects to MPRIS v2 Player"),
+      m_ArtistLabel("Connects to MPRIS v2"),
+      m_AlbumLabel("Unknown Album"), // 초기화
       m_PrevButton(),
       m_PlayPauseButton(),
       m_NextButton(),
@@ -53,13 +52,16 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     // 이전 상태로 창 위치 설정
     move(state.x, state.y);
 
+    set_type_hint(Gdk::WINDOW_TYPE_HINT_UTILITY); 
+    set_keep_above(true); 
     set_decorated(false);
-    set_resizable(true); // 크기 조절 활성화
-    set_type_hint(Gdk::WINDOW_TYPE_HINT_UTILITY); // Wayland/X11 위젯 힌트
-    set_keep_above(true);
-    set_accept_focus(false); 
+    
+    // Wayland에서 최대한 스티키하게 동작하도록 처리
+    // 일부 환경에서는 UTILITY + stick() 조합이 가장 잘 작동함
+    stick(); 
     set_skip_taskbar_hint(true);
     set_skip_pager_hint(true);
+    set_accept_focus(false);
 
     // 창의 투명도(RGBA) 활성화
     auto screen_for_visual = get_screen();
@@ -84,20 +86,22 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_MainBox.pack_start(m_SpectrumWidget, true, true, 0);
 
     // 2. 상단 수평 박스 배치 (좌측: 앨범 아트, 우측: 노래 정보 및 컨트롤)
-    m_TopHBox.pack_start(m_AlbumArtVBox, false, false, 0);
+    m_TopHBox.pack_start(m_AlbumArtControlBox, false, false, 0);
     m_TopHBox.pack_start(m_InfoVBox, true, true, 15);
 
     // 3. 앨범 아트 영역 구성
-    m_AlbumArt.set_name("album-art");
-    m_AlbumArt.set_size_request(120, 120); 
-    m_AlbumArtOverlay.add(m_AlbumArt);
-    m_AlbumArtVBox.pack_start(m_AlbumArtOverlay, false, false, 0);
+    m_AlbumArtArea.set_size_request(120, 120); 
+    m_AlbumArtArea.signal_draw().connect(sigc::mem_fun(*this, &MusicWidget::on_album_art_draw));
+    m_AlbumArtControlBox.pack_start(m_AlbumArtArea, false, false, 0);
+    m_AlbumArtControlBox.set_name("album-art-container");
+    m_AlbumArtControlBox.set_valign(Gtk::ALIGN_CENTER);
 
     // 4. 정보 섹션 구성 (곡명, 아티스트, 프로그레스, 컨트롤)
     m_InfoVBox.set_orientation(Gtk::Orientation::ORIENTATION_VERTICAL);
     m_InfoVBox.set_spacing(0);
     m_InfoVBox.pack_start(m_TrackLabel, false, false, 0);
     m_InfoVBox.pack_start(m_ArtistLabel, false, false, 0);
+    m_InfoVBox.pack_start(m_AlbumLabel, false, false, 0); // 앨범 라벨 배치
     m_InfoVBox.pack_start(m_ProgressBar, false, false, 10);
     
     // 컨트롤 버튼을 정보 섹션 바로 아래에 배치
@@ -115,6 +119,7 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     m_PlayPauseButton.set_name("play-pause-button");
     m_TrackLabel.set_name("track-label");
     m_ArtistLabel.set_name("artist-label");
+    m_AlbumLabel.set_name("album-label"); // CSS 대상 ID 부여
 
     m_PrevButton.get_style_context()->add_class("control-button");
     m_PlayPauseButton.get_style_context()->add_class("control-button");
@@ -144,11 +149,22 @@ MusicWidget::MusicWidget(const WindowState& state, SettingsManager& settingsMana
     }
 
     auto css_provider = Gtk::CssProvider::create();
+    // CSS 파일 로드 시도 (상위 디렉토리와 현재 디렉토리 모두 확인)
+    bool css_loaded = false;
     try {
-        css_provider->load_from_path("../style.css");
+        css_provider->load_from_path("style.css");
+        css_loaded = true;
+    } catch (...) {
+        try {
+            css_provider->load_from_path("../style.css");
+            css_loaded = true;
+        } catch (...) {}
+    }
+    
+    if (css_loaded) {
         Gtk::StyleContext::add_provider_for_screen(get_screen(), css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    } catch (const Glib::Error& ex) {
-        std::cerr << "Error loading CSS: " << ex.what() << std::endl;
+    } else {
+        std::cerr << "Warning: style.css not found in . or .." << std::endl;
     }
 
     show_all_children();
@@ -247,21 +263,76 @@ void MusicWidget::update_spectrum_simulation() {
     static std::vector<double> spectrum(30, 0.0);
     bool is_playing = false;
     
-    // 플레이어가 재생 중일 때만 움직이도록 설정
+    // 플레이어가 연결되어 있고 재생 중일 때만 움직이도록 설정
     if (m_properties_proxy) {
         try {
             auto val = m_properties_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", "PlaybackStatus")));
             Glib::Variant<Glib::Variant<Glib::ustring>> status_variant;
             val.get_child(status_variant, 0);
             if (status_variant.get().get() == "Playing") is_playing = true;
-        } catch (...) {}
+        } catch (...) {
+            // D-Bus 호출 실패 시에는 움직이지 않음
+        }
     }
 
     for (int i = 0; i < 30; ++i) {
-        double target = is_playing ? (static_cast<double>(std::rand()) / RAND_MAX) : 0.05;
+        double target = is_playing ? (static_cast<double>(std::rand()) / RAND_MAX) : 0.02;
         spectrum[i] = spectrum[i] * 0.7 + target * 0.3;
     }
     m_SpectrumWidget.update_spectrum_data(spectrum);
+}
+
+bool MusicWidget::on_album_art_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
+    int width = m_AlbumArtArea.get_allocated_width();
+    int height = m_AlbumArtArea.get_allocated_height();
+    double center_x = width / 2.0;
+    double center_y = height / 2.0;
+    double radius = std::min(width, height) / 2.0 - 10.0; // 그림자 공간 확보를 위해 약간 작게
+
+    if (radius <= 0) return false;
+
+    // 1. 부드러운 외곽 그림자 (Glow)
+    for (int i = 0; i < 10; ++i) {
+        double alpha = 0.05 * (1.0 - i / 10.0);
+        cr->set_source_rgba(0, 0, 0, alpha);
+        cr->arc(center_x, center_y + 2, radius + i, 0, 2 * M_PI);
+        cr->fill();
+    }
+
+    // 2. 원형 절단 (Clip)
+    cr->save();
+    cr->arc(center_x, center_y, radius, 0, 2 * M_PI);
+    cr->clip();
+
+    if (m_CurrentPixbuf) {
+        // 이미지 그리기
+        double scale_x = (radius * 2.0) / m_CurrentPixbuf->get_width();
+        double scale_y = (radius * 2.0) / m_CurrentPixbuf->get_height();
+        double scale = std::max(scale_x, scale_y);
+        
+        cr->scale(scale, scale);
+        Gdk::Cairo::set_source_pixbuf(cr, m_CurrentPixbuf, 
+            (center_x / scale) - (m_CurrentPixbuf->get_width() / 2.0), 
+            (center_y / scale) - (m_CurrentPixbuf->get_height() / 2.0));
+        cr->paint();
+    } else {
+        // 기본 배경 (이미지가 없을 때)
+        cr->set_source_rgba(0.2, 0.2, 0.2, 1.0);
+        cr->paint();
+        cr->set_source_rgba(1, 1, 1, 0.3);
+        cr->set_line_width(2);
+        cr->arc(center_x, center_y, radius * 0.5, 0, 2 * M_PI);
+        cr->stroke();
+    }
+    cr->restore();
+
+    // 3. 세련된 테두리 (Border)
+    cr->set_source_rgba(255, 255, 255, 0.2);
+    cr->set_line_width(1.5);
+    cr->arc(center_x, center_y, radius, 0, 2 * M_PI);
+    cr->stroke();
+
+    return true;
 }
 
 void MusicWidget::init_dbus() {
@@ -272,12 +343,11 @@ void MusicWidget::update_player_status() {
     if (!m_player_proxy || !m_properties_proxy) {
         m_TrackLabel.set_text("No Player Active");
         m_ArtistLabel.set_text("Drag to Move");
-        // 앨범 아트 크기 조절 (창 높이에 맞춰 조절, 최소 60, 최대 150 등 제한 가능)
-        int win_width, win_height;
-        get_size(win_width, win_height);
-        int album_art_size = std::max(60, std::min(150, (win_height - 60))); 
-        m_AlbumArt.set_size_request(album_art_size, album_art_size);
-        m_AlbumArt.set_from_icon_name("media-optical", Gtk::ICON_SIZE_DIALOG);
+        m_AlbumLabel.set_text("Unknown Album");
+        
+        m_CurrentPixbuf.reset(); // 이미지 초기화
+        m_AlbumArtArea.queue_draw();
+        
         m_PlayPauseButton.set_image_from_icon_name("media-playback-start-symbolic", Gtk::ICON_SIZE_BUTTON);
         return;
     }
@@ -285,10 +355,10 @@ void MusicWidget::update_player_status() {
     try {
         Glib::ustring title = "Unknown Track";
         Glib::ustring artist = "Unknown Artist";
+        Glib::ustring album = "Unknown Album";
         Glib::ustring playback_status = "Stopped";
         Glib::ustring art_url_str = "";
 
-        // 1. GetAll로 한 번에 시도
         bool success = false;
         try {
             auto get_all_args = Glib::Variant<std::tuple<Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player"));
@@ -306,7 +376,14 @@ void MusicWidget::update_player_status() {
                 if (metadata_var.is_of_type(Glib::VariantType("a{sv}"))) {
                     auto metadata_map = Glib::VariantBase::cast_dynamic<Glib::Variant<std::map<Glib::ustring, Glib::VariantBase>>>(metadata_var).get();
                     
+                    // 디버그용: 모든 메타데이터 키 출력
+                    std::cout << "[Debug] --- Metadata Keys for " << m_current_player_bus_name << " ---" << std::endl;
+                    for (auto const& [key, val] : metadata_map) {
+                        std::cout << "  " << key << " (" << val.get_type_string() << ")" << std::endl;
+                    }
+
                     if (metadata_map.count("xesam:title")) title = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(metadata_map["xesam:title"]).get();
+                    if (metadata_map.count("xesam:album")) album = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(metadata_map["xesam:album"]).get();
                     
                     if (metadata_map.count("xesam:artist")) {
                         auto artist_var = metadata_map["xesam:artist"];
@@ -324,11 +401,9 @@ void MusicWidget::update_player_status() {
                 }
             }
             success = true;
-        } catch (...) {
-            // GetAll 실패 시 개별 Get으로 시도 (일부 플레이어 대응)
-        }
+        } catch (...) {}
 
-        if (!success) {
+        if (!success || title == "Unknown Track") {
             try {
                 auto get_prop = [&](const Glib::ustring& prop) -> Glib::VariantBase {
                     auto val = m_properties_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", prop)));
@@ -337,35 +412,42 @@ void MusicWidget::update_player_status() {
                     return wrapped.get();
                 };
 
-                playback_status = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(get_prop("PlaybackStatus")).get();
+                auto status_var = get_prop("PlaybackStatus");
+                if (status_var.is_of_type(Glib::VariantType("s"))) playback_status = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(status_var).get();
+
                 auto metadata_var = get_prop("Metadata");
                 if (metadata_var.is_of_type(Glib::VariantType("a{sv}"))) {
                     auto metadata_map = Glib::VariantBase::cast_dynamic<Glib::Variant<std::map<Glib::ustring, Glib::VariantBase>>>(metadata_var).get();
                     if (metadata_map.count("xesam:title")) title = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(metadata_map["xesam:title"]).get();
+                    if (metadata_map.count("xesam:album")) album = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(metadata_map["xesam:album"]).get();
                     if (metadata_map.count("xesam:artist")) {
-                        // ... 아티스트 파싱 생략 가능하거나 위와 동일하게 처리
+                        auto artist_var = metadata_map["xesam:artist"];
+                        if (artist_var.is_of_type(Glib::VariantType("as"))) {
+                            auto artists = Glib::VariantBase::cast_dynamic<Glib::Variant<std::vector<Glib::ustring>>>(artist_var).get();
+                            if (!artists.empty()) artist = artists[0];
+                        }
                     }
+                    if (metadata_map.count("mpris:artUrl")) art_url_str = Glib::VariantBase::cast_dynamic<Glib::Variant<Glib::ustring>>(metadata_map["mpris:artUrl"]).get();
                 }
             } catch (...) {}
         }
 
         m_TrackLabel.set_text(title);
         m_ArtistLabel.set_text(artist);
+        m_AlbumLabel.set_text(album);
 
-        // 앨범 아트 및 버튼 상태 업데이트 (기존 로직 유지)
+        // 앨범 아트 로직 업데이트
         if (!art_url_str.empty() && art_url_str.substr(0, 7) == "file://") {
             try {
-                auto pixbuf = Gdk::Pixbuf::create_from_file(art_url_str.substr(7));
-                int win_width, win_height;
-                get_size(win_width, win_height);
-                int album_art_size = std::max(60, std::min(150, (win_height - 60)));
-                m_AlbumArt.set_size_request(album_art_size, album_art_size);
-                m_AlbumArt.set(pixbuf->scale_simple(album_art_size, album_art_size, Gdk::INTERP_BILINEAR));
+                m_CurrentPixbuf = Gdk::Pixbuf::create_from_file(art_url_str.substr(7));
+                m_AlbumArtArea.queue_draw();
             } catch (...) {
-                m_AlbumArt.set_from_icon_name("media-optical", Gtk::ICON_SIZE_DIALOG);
+                m_CurrentPixbuf.reset();
+                m_AlbumArtArea.queue_draw();
             }
         } else {
-            m_AlbumArt.set_from_icon_name("media-optical", Gtk::ICON_SIZE_DIALOG);
+            m_CurrentPixbuf.reset();
+            m_AlbumArtArea.queue_draw();
         }
 
         if (playback_status == "Playing") {
@@ -380,7 +462,8 @@ void MusicWidget::update_player_status() {
 
 void MusicWidget::call_player_method(const Glib::ustring& method_name) {
     if (!m_player_proxy) {
-        std::cerr << "[MusicWidget] ERROR: Player proxy is not valid for method: " << method_name << std::endl;
+        // 플레이어가 연결되지 않았을 때는 에러 메시지 대신 디버그 메시지로 출력하여 노이즈 감소
+        std::cout << "[Debug] No active player for method: " << method_name << std::endl;
         return;
     }
     try {
@@ -439,30 +522,44 @@ void MusicWidget::find_and_update_player() {
 
         for (const auto& name : names) {
             if (name.find("org.mpris.MediaPlayer2") == 0) {
+                std::cout << "[Debug] Found MPRIS player candidate: " << name << std::endl;
                 try {
                     auto p_proxy = Gio::DBus::Proxy::create_for_bus_sync(Gio::DBus::BUS_TYPE_SESSION, name, "/org/mpris/MediaPlayer2", "org.mpris.MediaPlayer2.Player");
                     auto prop_proxy = Gio::DBus::Proxy::create_for_bus_sync(Gio::DBus::BUS_TYPE_SESSION, name, "/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties");
-                    if (!p_proxy || !prop_proxy) continue;
+                    if (!p_proxy || !prop_proxy) {
+                        std::cout << "[Debug] Failed to create proxies for: " << name << std::endl;
+                        continue;
+                    }
 
-                    prop_proxy->set_default_timeout(300);
-                    auto val = prop_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", "PlaybackStatus")));
-                    Glib::Variant<Glib::Variant<Glib::ustring>> status_variant;
-                    val.get_child(status_variant, 0);
-                    Glib::ustring status = status_variant.get().get();
+                    prop_proxy->set_default_timeout(500);
+                    Glib::ustring status = "Stopped";
+                    try {
+                        auto val = prop_proxy->call_sync("Get", Glib::Variant<std::tuple<Glib::ustring, Glib::ustring>>::create(std::make_tuple("org.mpris.MediaPlayer2.Player", "PlaybackStatus")));
+                        Glib::Variant<Glib::Variant<Glib::ustring>> status_variant;
+                        val.get_child(status_variant, 0);
+                        status = status_variant.get().get();
+                    } catch (...) {
+                        std::cout << "[Debug] Could not get PlaybackStatus for: " << name << std::endl;
+                    }
 
                     int score = 0;
                     if (status == "Playing") score += 100;
+                    else if (status == "Paused") score += 50;
                     
-                    // 우선순위: musicube나 spotify 등을 브라우저보다 높게 설정
-                    if (name.find("musicube") != Glib::ustring::npos || 
-                        name.find("spotify") != Glib::ustring::npos ||
-                        name.find("rhythmbox") != Glib::ustring::npos) {
-                        score += 50;
-                    } else if (name.find("chrome") != Glib::ustring::npos || 
-                               name.find("chromium") != Glib::ustring::npos ||
-                               name.find("firefox") != Glib::ustring::npos) {
-                        score -= 50; // 브라우저는 우선순위 낮춤
+                    // 우선순위: musikcube나 spotify 등을 브라우저보다 높게 설정
+                    // 대소문자 구분 없이 찾기 위해 소문자로 변환 후 비교
+                    Glib::ustring lower_name = name.lowercase();
+                    if (lower_name.find("musikcube") != Glib::ustring::npos || 
+                        lower_name.find("spotify") != Glib::ustring::npos ||
+                        lower_name.find("rhythmbox") != Glib::ustring::npos) {
+                        score += 250; // 음악 플레이어 가중치 대폭 상향
+                    } else if (lower_name.find("chrome") != Glib::ustring::npos || 
+                               lower_name.find("chromium") != Glib::ustring::npos ||
+                               lower_name.find("firefox") != Glib::ustring::npos) {
+                        score -= 100; // 브라우저는 더 강하게 감점
                     }
+
+                    std::cout << "[Debug] Player: " << name << ", Status: " << status << ", Score: " << score << std::endl;
 
                     if (score > best_score) {
                         best_score = score;
@@ -470,12 +567,17 @@ void MusicWidget::find_and_update_player() {
                         best_player_proxy = p_proxy;
                         best_properties_proxy = prop_proxy;
                     }
-                } catch (...) { continue; }
+                } catch (const Glib::Error& e) {
+                    std::cout << "[Debug] Error connecting to " << name << ": " << e.what() << std::endl;
+                } catch (...) {
+                    std::cout << "[Debug] Unknown error connecting to " << name << std::endl;
+                }
             }
         }
 
-        // 새로운 플레이어로 전환이 필요할 때만 업데이트
-        if (!best_player.empty() && best_player != m_current_player_bus_name) {
+        // 새로운 플레이어로 전환이 필요하거나 현재 프록시가 유실된 경우 업데이트
+        if (!best_player.empty() && (best_player != m_current_player_bus_name || !m_player_proxy || !m_properties_proxy)) {
+            std::cout << "[Debug] Connecting to player: " << best_player << std::endl;
             m_current_player_bus_name = best_player;
             m_player_proxy = best_player_proxy;
             m_properties_proxy = best_properties_proxy;
@@ -488,6 +590,12 @@ void MusicWidget::find_and_update_player() {
                 m_timer_connection = Glib::signal_timeout().connect(sigc::mem_fun(*this, &MusicWidget::update_progress), 1000);
             }
             std::cout << "[Debug] Switched to better player: " << m_current_player_bus_name << std::endl;
+        } else if (best_player.empty() && !m_current_player_bus_name.empty()) {
+            // 아무 플레이어도 없는데 기존에 연결정보가 있다면 완전 초기화
+            m_player_proxy.reset();
+            m_properties_proxy.reset();
+            m_current_player_bus_name = "";
+            update_player_status();
         }
     } catch (const Glib::Error& ex) {
         std::cerr << "Error in find_and_update_player: " << ex.what() << std::endl;

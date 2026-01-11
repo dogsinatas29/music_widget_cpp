@@ -1213,9 +1213,9 @@ CMakeFiles/MusicWidgetCpp.dir/CavaWidget.cpp.o
 
 CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o
  /home/dogsinatas/c_project/music_widget_cpp/MusicWidget.cpp
- /home/dogsinatas/c_project/music_widget_cpp/CavaWidget.h
  /home/dogsinatas/c_project/music_widget_cpp/MusicWidget.h
  /home/dogsinatas/c_project/music_widget_cpp/SettingsManager.h
+ /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.h
  /home/dogsinatas/c_project/music_widget_cpp/WindowState.h
  /usr/include/alloca.h
  /usr/include/asm-generic/bitsperlong.h
@@ -1265,7 +1265,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o
  /usr/include/atkmm-1.6/atkmm/relation.h
  /usr/include/c++/15/algorithm
  /usr/include/c++/15/array
- /usr/include/c++/15/atomic
  /usr/include/c++/15/backward/auto_ptr.h
  /usr/include/c++/15/backward/binders.h
  /usr/include/c++/15/bit
@@ -1336,7 +1335,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o
  /usr/include/c++/15/bits/std_abs.h
  /usr/include/c++/15/bits/std_function.h
  /usr/include/c++/15/bits/std_mutex.h
- /usr/include/c++/15/bits/std_thread.h
  /usr/include/c++/15/bits/stl_algo.h
  /usr/include/c++/15/bits/stl_algobase.h
  /usr/include/c++/15/bits/stl_bvector.h
@@ -1365,7 +1363,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o
  /usr/include/c++/15/bits/streambuf_iterator.h
  /usr/include/c++/15/bits/string_view.tcc
  /usr/include/c++/15/bits/stringfwd.h
- /usr/include/c++/15/bits/this_thread_sleep.h
  /usr/include/c++/15/bits/uniform_int_dist.h
  /usr/include/c++/15/bits/unique_lock.h
  /usr/include/c++/15/bits/unique_ptr.h
@@ -1431,7 +1428,6 @@ CMakeFiles/MusicWidgetCpp.dir/MusicWidget.cpp.o
  /usr/include/c++/15/string
  /usr/include/c++/15/string_view
  /usr/include/c++/15/system_error
- /usr/include/c++/15/thread
  /usr/include/c++/15/tr1/bessel_function.tcc
  /usr/include/c++/15/tr1/beta_function.tcc
  /usr/include/c++/15/tr1/ell_integral.tcc
@@ -4244,9 +4240,9 @@ CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o
 
 CMakeFiles/MusicWidgetCpp.dir/main.cpp.o
  /home/dogsinatas/c_project/music_widget_cpp/main.cpp
- /home/dogsinatas/c_project/music_widget_cpp/CavaWidget.h
  /home/dogsinatas/c_project/music_widget_cpp/MusicWidget.h
  /home/dogsinatas/c_project/music_widget_cpp/SettingsManager.h
+ /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.h
  /home/dogsinatas/c_project/music_widget_cpp/WindowState.h
  /usr/include/alloca.h
  /usr/include/asm-generic/bitsperlong.h
@@ -4296,7 +4292,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o
  /usr/include/atkmm-1.6/atkmm/relation.h
  /usr/include/c++/15/algorithm
  /usr/include/c++/15/array
- /usr/include/c++/15/atomic
  /usr/include/c++/15/backward/auto_ptr.h
  /usr/include/c++/15/backward/binders.h
  /usr/include/c++/15/bit
@@ -4367,7 +4362,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o
  /usr/include/c++/15/bits/std_abs.h
  /usr/include/c++/15/bits/std_function.h
  /usr/include/c++/15/bits/std_mutex.h
- /usr/include/c++/15/bits/std_thread.h
  /usr/include/c++/15/bits/stl_algo.h
  /usr/include/c++/15/bits/stl_algobase.h
  /usr/include/c++/15/bits/stl_bvector.h
@@ -4396,7 +4390,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o
  /usr/include/c++/15/bits/streambuf_iterator.h
  /usr/include/c++/15/bits/string_view.tcc
  /usr/include/c++/15/bits/stringfwd.h
- /usr/include/c++/15/bits/this_thread_sleep.h
  /usr/include/c++/15/bits/uniform_int_dist.h
  /usr/include/c++/15/bits/unique_lock.h
  /usr/include/c++/15/bits/unique_ptr.h
@@ -4462,7 +4455,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o
  /usr/include/c++/15/string
  /usr/include/c++/15/string_view
  /usr/include/c++/15/system_error
- /usr/include/c++/15/thread
  /usr/include/c++/15/tr1/bessel_function.tcc
  /usr/include/c++/15/tr1/beta_function.tcc
  /usr/include/c++/15/tr1/ell_integral.tcc
