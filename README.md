@@ -15,10 +15,10 @@
 3.  **음악 플레이어 제어:** 재생, 일시정지, 다음 곡, 이전 곡 제어 및 진행 상태 바(Progress Bar) 표시.
 4.  **지능형 플레이어 감지:** `musikcube`, `spotify` 등 음악 플레이어를 우선 감지하며 브라우저(크롬 등)의 간섭을 차단하는 Sticky 연결 로직 적용.
 5.  **위젯 위치 및 크기 자유 조절:** CTRL 키 없이 드래그로 이동 가능하며, 테두리를 잡아 자유롭게 리사이즈 가능 (Wayland 네이티브 드래그 지원).
-6.  **안정적인 스펙트럼 시각화:** 위젯 자체에서 작동하는 통합 스펙트럼 시뮬레이션. 
-    *   **컬러 프리셋:** 비주얼라이저를 **우클릭**하여 메뉴에서 선택하거나, **좌클릭**으로 순차 변경 가능.
-    *   **지원 테마:** Spotify Green, Gruvbox, Nord, Blue, Purple, Orange, Minimal White.
-7.  **강력한 안정성:** D-Bus 통신 예외 처리 및 타임아웃 설정을 통해 강제 종료 및 프리징 현상 해결.
+6.  **다양한 컬러 테마 지원:** 비주얼라이저(스펙트럼) 색상을 사용자의 취향에 맞춰 변경할 수 있습니다. 
+    *   **테마 종류:** Spotify Green, **Gruvbox**, **Nord**, Blue, Purple, Orange, Minimal White.
+    *   **조작 방법:** 비주얼라이저 영역을 **우클릭**하여 메뉴에서 선택하거나, **좌클릭**으로 순차적으로 변경할 수 있습니다.
+7.  **안정적인 시각화:** 위젯 자체에서 작동하는 통합 스펙트럼 시뮬레이션.
 8.  **Wayland 호환성:** Wayland 환경 최적화 및 안정적인 동작 보장.
     *   **주의:** 가상 화면 고정(Sticky) 기능은 **Xorg(X11)**에서만 자동 실행되며, Wayland에서는 컴포지터 보안 정책에 따라 사용자가 창 메뉴에서 수동으로 설정해야 할 수 있습니다.
 
@@ -71,10 +71,10 @@ This project is a GTK3-based music player widget that displays current track inf
 3.  **Playback Controls:** Supports Play, Pause, Next, and Previous track controls with a functional progress bar.
 4.  **Intelligent Player Detection:** Prioritizes dedicated players like `musikcube` and `spotify` using sticky connection logic, while ignoring browser-based players.
 5.  **Flexible Positioning & Resizing:** Movable via drag-and-drop without the CTRL key, and freely resizable via window edges (Wayland native drag supported).
-6.  **Built-in Spectrum Visualization:** Smooth integrated spectrum simulation.
-    *   **Color Presets:** **Right-click** the visualizer to select from a menu, or **Left-click** to cycle through modes.
-    *   **Supported Themes:** Spotify Green, Gruvbox, Nord, Blue, Purple, Orange, and Minimal White.
-7.  **Enhanced Stability:** Robust D-Bus exception handling and timeouts to prevent crashes and freezes.
+6.  **Extensive Theme Support:** Customize the visualizer color to match your desktop environment.
+    *   **Included Themes:** Spotify Green, **Gruvbox**, **Nord**, Blue, Purple, Orange, and Minimal White.
+    *   **How to Change:** **Right-click** on the visualizer to open a selection menu, or **Left-click** to cycle through modes.
+7.  **Built-in Spectrum Visualization:** Smooth integrated spectrum simulation.
 8.  **Wayland Compatibility:** Optimized for Wayland environments with robust functionality.
     *   **Note:** The "Sticky" (workspace persistence) feature is fully supported automatically on **Xorg (X11)**. On Wayland, due to compositor security policies, you may need to manually enable "Always on Visible Workspace" via the window menu.
 
