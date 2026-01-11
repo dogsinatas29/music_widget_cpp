@@ -12,6 +12,7 @@ SpectrumWidget::SpectrumWidget()
 {
     // 초기 50개의 스펙트럼 데이터를 0.0으로 초기화합니다.
     add_events(Gdk::BUTTON_PRESS_MASK);
+    init_context_menu();
 }
 
 SpectrumWidget::~SpectrumWidget()
@@ -90,6 +91,14 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
                 cr->set_source_rgba(1.0, 1.0, 1.0, 0.6);
                 if (bar_height_ratio > 0.7) cr->set_source_rgba(1.0, 1.0, 1.0, 0.9);
                 break;
+            case VisualizerColor::GRUVBOX:
+                cr->set_source_rgb(0.72, 0.73, 0.15); // #b8bb26 (Green)
+                if (bar_height_ratio > 0.7) cr->set_source_rgb(0.56, 0.75, 0.49); // #8ec07c (Aqua)
+                break;
+            case VisualizerColor::NORD:
+                cr->set_source_rgb(0.53, 0.75, 0.82); // #88c0d0 (Frost Blue)
+                if (bar_height_ratio > 0.7) cr->set_source_rgb(0.51, 0.63, 0.76); // #81a1c1 (Frost Darker)
+                break;
         }
 
         // 막대를 둥근 모서리로 그리기
@@ -110,13 +119,41 @@ bool SpectrumWidget::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
 bool SpectrumWidget::on_button_press_event(GdkEventButton* event)
 {
-    if (event->type == GDK_BUTTON_PRESS && event->button == 1) { // 좌클릭
-        int next_color = static_cast<int>(m_color_preset) + 1;
-        if (next_color > 4) next_color = 0;
-        m_color_preset = static_cast<VisualizerColor>(next_color);
-        queue_draw();
-        return true;
+    if (event->type == GDK_BUTTON_PRESS) {
+        if (event->button == 1) { // 좌클릭: 순차 변경
+            int next_color = static_cast<int>(m_color_preset) + 1;
+            if (next_color > 6) next_color = 0; // Nord까지 포함 (0~6)
+            m_color_preset = static_cast<VisualizerColor>(next_color);
+            queue_draw();
+            return true;
+        } else if (event->button == 3) { // 우클릭: 메뉴 열기
+            m_ContextMenu.popup(event->button, event->time);
+            return true;
+        }
     }
     return Gtk::DrawingArea::on_button_press_event(event);
+}
+
+void SpectrumWidget::init_context_menu() {
+    auto add_item = [&](const Glib::ustring& label, VisualizerColor color) {
+        auto item = Gtk::make_managed<Gtk::MenuItem>(label);
+        item->signal_activate().connect([this, color] { on_menu_select(color); });
+        m_ContextMenu.append(*item);
+    };
+
+    add_item("Green (Spotify)", VisualizerColor::GREEN);
+    add_item("Blue", VisualizerColor::BLUE);
+    add_item("Purple", VisualizerColor::PURPLE);
+    add_item("Orange", VisualizerColor::ORANGE);
+    add_item("White", VisualizerColor::WHITE);
+    add_item("Gruvbox Theme", VisualizerColor::GRUVBOX);
+    add_item("Nord Theme", VisualizerColor::NORD);
+
+    m_ContextMenu.show_all();
+}
+
+void SpectrumWidget::on_menu_select(VisualizerColor color) {
+    m_color_preset = color;
+    queue_draw();
 }
 

@@ -1126,6 +1126,16 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: \
  /home/dogsinatas/c_project/music_widget_cpp/WindowState.h \
  /home/dogsinatas/c_project/music_widget_cpp/SpectrumWidget.h \
  /usr/include/gtkmm-3.0/gtkmm/drawingarea.h \
+ /usr/include/gtkmm-3.0/gtkmm/menu.h \
+ /usr/include/gtkmm-3.0/gtkmm/menushell.h \
+ /usr/include/gtkmm-3.0/gtkmm/container.h \
+ /usr/include/gtkmm-3.0/gtkmm/childpropertyproxy.h \
+ /usr/include/gtkmm-3.0/gtkmm/childpropertyproxy_base.h \
+ /usr/include/gtkmm-3.0/gtkmm/menuitem.h \
+ /usr/include/gtkmm-3.0/gtkmm/bin.h \
+ /usr/include/gtkmm-3.0/gtkmm/accellabel.h \
+ /usr/include/gtkmm-3.0/gtkmm/label.h /usr/include/gtkmm-3.0/gtkmm/misc.h \
+ /usr/include/gtkmm-3.0/gtkmm/activatable.h \
  /usr/include/glibmm-2.4/glibmm/thread.h /usr/include/gtkmm-3.0/gtkmm.h \
  /usr/include/glibmm-2.4/glibmm.h \
  /usr/include/glibmm-2.4/glibmm/threads.h \
@@ -1282,16 +1292,12 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: \
  /usr/include/gtkmm-3.0/gtkmm/radiobuttongroup.h \
  /usr/include/gtkmm-3.0/gtkmm/aboutdialog.h \
  /usr/include/gtkmm-3.0/gtkmm/dialog.h \
- /usr/include/gtkmm-3.0/gtkmm/window.h /usr/include/gtkmm-3.0/gtkmm/bin.h \
- /usr/include/gtkmm-3.0/gtkmm/container.h \
- /usr/include/gtkmm-3.0/gtkmm/childpropertyproxy.h \
- /usr/include/gtkmm-3.0/gtkmm/childpropertyproxy_base.h \
+ /usr/include/gtkmm-3.0/gtkmm/window.h \
  /usr/include/gtkmm-3.0/gtkmm/windowgroup.h \
  /usr/include/gtkmm-3.0/gtkmm/box.h \
  /usr/include/gtkmm-3.0/gtkmm/orientable.h \
  /usr/include/gtkmm-3.0/gtkmm/hvbox.h \
  /usr/include/gtkmm-3.0/gtkmm/button.h \
- /usr/include/gtkmm-3.0/gtkmm/activatable.h \
  /usr/include/gtkmm-3.0/gtkmm/buttonbox.h \
  /usr/include/gtkmm-3.0/gtkmm/hvbuttonbox.h \
  /usr/include/gtkmm-3.0/gtkmm/headerbar.h \
@@ -1323,11 +1329,6 @@ CMakeFiles/MusicWidgetCpp.dir/main.cpp.o: \
  /usr/include/gtkmm-3.0/gtkmm/scrollable.h \
  /usr/include/gtkmm-3.0/gtkmm/entry.h \
  /usr/include/gtkmm-3.0/gtkmm/editable.h \
- /usr/include/gtkmm-3.0/gtkmm/menu.h \
- /usr/include/gtkmm-3.0/gtkmm/menushell.h \
- /usr/include/gtkmm-3.0/gtkmm/menuitem.h \
- /usr/include/gtkmm-3.0/gtkmm/accellabel.h \
- /usr/include/gtkmm-3.0/gtkmm/label.h /usr/include/gtkmm-3.0/gtkmm/misc.h \
  /usr/include/gtkmm-3.0/gtkmm/entrycompletion.h \
  /usr/include/gtkmm-3.0/gtkmm/image.h \
  /usr/include/gtkmm-3.0/gtkmm/entrybuffer.h \

@@ -2,6 +2,8 @@
 #define SPECTRUM_WIDGET_H
 
 #include <gtkmm/drawingarea.h>
+#include <gtkmm/menu.h>
+#include <gtkmm/menuitem.h>
 #include <vector>
 #include <glibmm/thread.h> // Glib::Mutex 및 Glib::Mutex::Lock을 사용하기 위해 추가
 
@@ -10,7 +12,9 @@ enum class VisualizerColor {
     BLUE,
     PURPLE,
     ORANGE,
-    WHITE
+    WHITE,
+    GRUVBOX,
+    NORD
 };
 
 class SpectrumWidget : public Gtk::DrawingArea
@@ -30,10 +34,15 @@ protected:
     virtual bool on_button_press_event(GdkEventButton* event) override;
 
 private:
+    void init_context_menu();
+    void on_menu_select(VisualizerColor color);
+
     std::vector<double> m_spectrum_data;
     Glib::Mutex m_data_mutex; // 데이터 동기화를 위한 뮤텍스
     int m_max_drawing_height; // 스펙트럼이 그려질 수 있는 최대 높이
     VisualizerColor m_color_preset;
+
+    Gtk::Menu m_ContextMenu;
 };
 
 #endif // SPECTRUM_WIDGET_H

@@ -1077,6 +1077,20 @@ CMakeFiles/MusicWidgetCpp.dir/SpectrumWidget.cpp.o: \
  /usr/include/gtkmm-3.0/gtkmm/stockid.h \
  /usr/include/gtkmm-3.0/gtkmm/widgetpath.h \
  /usr/include/giomm-2.4/giomm/actiongroup.h \
+ /usr/include/gtkmm-3.0/gtkmm/menu.h \
+ /usr/include/gtkmm-3.0/gtkmm/menushell.h \
+ /usr/include/gtkmm-3.0/gtkmm/container.h \
+ /usr/include/gtkmm-3.0/gtkmm/childpropertyproxy.h \
+ /usr/include/gtkmm-3.0/gtkmm/childpropertyproxy_base.h \
+ /usr/include/gtkmm-3.0/gtkmm/menuitem.h \
+ /usr/include/gtkmm-3.0/gtkmm/bin.h \
+ /usr/include/gtkmm-3.0/gtkmm/accelkey.h \
+ /usr/include/gtkmm-3.0/gtkmm/accellabel.h \
+ /usr/include/gtkmm-3.0/gtkmm/label.h /usr/include/gtkmm-3.0/gtkmm/misc.h \
+ /usr/include/gtkmm-3.0/gtkmm/activatable.h \
+ /usr/include/gtkmm-3.0/gtkmm/action.h \
+ /usr/include/gtkmm-3.0/gtkmm/accelgroup.h \
+ /usr/include/giomm-2.4/giomm/menumodel.h \
  /usr/include/glibmm-2.4/glibmm/thread.h \
  /usr/include/glibmm-2.4/glibmm/timeval.h \
  /usr/include/glibmm-2.4/glibmm/main.h \
